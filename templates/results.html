@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ data.name }} - ML Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .explanation {
+            background-color: #e9ecef;
+            border-left: 4px solid #0d6efd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .explanation h6 {
+            margin-top: 0;
+            color: #0d6efd;
+        }
+        .term-highlight {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header text-center">
+            <h1>{{ data.name }}</h1>
+            <p class="lead">Detailed Analysis Results</p>
+            <a href="/" class="btn btn-light">← Back to Dashboard</a>
+        </div>
+
+        <!-- Dataset Info -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Dataset Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Dataset Size:</strong> {{ data.dataset_shape[0] }} rows × {{ data.dataset_shape[1] }} columns</p>
+                        
+                        <!-- Dataset Sample -->
+                        {% if data.dataset_sample %}
+                        <h6>Dataset Sample (First 5 Rows)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        {% for column in data.columns %}
+                                        <th>{{ column }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in data.dataset_sample %}
+                                    <tr>
+                                        {% for column in data.columns %}
+                                        <td>{{ row[column] }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Analysis Results</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if analysis_type == 'kmeans' %}
+                            <!-- K-Means Clustering Results -->
+                            <div class="metric-card text-center">
+                                <h6>Silhouette Score 
+                                    <i class="fas fa-info-circle text-primary" 
+                                       data-bs-toggle="tooltip" 
+                                       title="Measures clustering quality from -1 to 1. Higher values indicate better clustering."></i>
+                                </h6>
+                                <div class="metric-value">{{ "%.3f"|format(data.results.silhouette_score) }}</div>
+                                <p class="text-muted">Higher values indicate better clustering</p>
+                            </div>
+                            
+                            <!-- Explanation for Silhouette Score -->
+                            <div class="explanation">
+                                <h6>What is Silhouette Score?</h6>
+                                <p>The Silhouette Score measures how similar an object is to its own cluster compared to other clusters. 
+                                Values range from -1 to 1:</p>
+                                <ul>
+                                    <li><span class="term-highlight">+1</span>: Objects are well matched to their own cluster and poorly matched to neighboring clusters</li>
+                                    <li><span class="term-highlight">0</span>: Objects are on or very close to the decision boundary between two neighboring clusters</li>
+                                    <li><span class="term-highlight">-1</span>: Objects might have been assigned to the wrong cluster</li>
+                                </ul>
+                                <p>In this case, a score of <span class="term-highlight">{{ "%.3f"|format(data.results.silhouette_score) }}</span> indicates 
+                                {% if data.results.silhouette_score > 0.5 %}good{% elif data.results.silhouette_score > 0.25 %}fair{% else %}poor{% endif %} clustering quality.</p>
+                            </div>
+                            
+                            <h6>Cluster Labels Distribution</h6>
+                            <div class="progress-stacked">
+                                {% set labels = data.results.labels %}
+                                {% set unique_labels = {} %}
+                                {% for label in labels %}
+                                    {% if label in unique_labels %}
+                                        {% set _ = unique_labels.update({label: unique_labels[label] + 1}) %}
+                                    {% else %}
+                                        {% set _ = unique_labels.update({label: 1}) %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% for label, count in unique_labels.items() %}
+                                    {% set percentage = (count / labels|length * 100) %}
+                                    <div class="progress" style="height: 30px; margin-bottom: 10px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" 
+                                             aria-valuenow="{{ percentage }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            Cluster {{ label }}: {{ count }} samples ({{ "%.1f"|format(percentage) }}%)
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                        {% elif analysis_type == 'imdb' %}
+                            <!-- Sentiment Analysis Results -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="metric-card text-center">
+                                        <h6>Accuracy 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Percentage of correct predictions. Higher is better."></i>
+                                        </h6>
+                                        <div class="metric-value">{{ "%.2f"|format(data.results.accuracy * 100) }}%</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="metric-card text-center">
+                                        <h6>F1-Score 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Harmonic mean of precision and recall. Ranges from 0 to 1, where 1 is perfect."></i>
+                                        </h6>
+                                        <div class="metric-value">{{ "%.3f"|format(data.results.get('1', {}).get('f1-score', 0)) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Explanation for Accuracy and F1-Score -->
+                            <div class="explanation">
+                                <h6>Understanding the Metrics</h6>
+                                <p><span class="term-highlight">Accuracy</span>: The percentage of correct predictions out of all predictions. 
+                                {{ "%.2f"|format(data.results.accuracy * 100) }}% means {{ "%.0f"|format(data.results.accuracy * 100) }} out of 100 predictions were correct.</p>
+                                
+                                <p><span class="term-highlight">F1-Score</span>: The harmonic mean of precision and recall, providing a balance between the two. 
+                                A score closer to 1.0 indicates better performance.</p>
+                            </div>
+                            
+                            <h6>Classification Report</h6>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Precision 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Of all positive predictions, how many were actually positive?"></i>
+                                        </th>
+                                        <th>Recall 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Of all actual positives, how many were correctly predicted?"></i>
+                                        </th>
+                                        <th>F1-Score 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Harmonic mean of precision and recall."></i>
+                                        </th>
+                                        <th>Support 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Number of actual occurrences of the class in the dataset."></i>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for class, metrics in data.results.items() %}
+                                        {% if class != 'accuracy' %}
+                                        <tr>
+                                            <td>{{ class }}</td>
+                                            <td>{{ "%.3f"|format(metrics.precision) }}</td>
+                                            <td>{{ "%.3f"|format(metrics.recall) }}</td>
+                                            <td>{{ "%.3f"|format(metrics['f1-score']) }}</td>
+                                            <td>{{ metrics.support|int }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                            <!-- Explanation for Classification Report -->
+                            <div class="explanation">
+                                <h6>Understanding the Classification Report</h6>
+                                <ul>
+                                    <li><span class="term-highlight">Precision</span>: Of all positive predictions, how many were actually positive? High precision means low false positive rate.</li>
+                                    <li><span class="term-highlight">Recall</span>: Of all actual positives, how many were correctly predicted? High recall means low false negative rate.</li>
+                                    <li><span class="term-highlight">F1-Score</span>: The harmonic mean of precision and recall. Balances both metrics.</li>
+                                    <li><span class="term-highlight">Support</span>: The number of actual occurrences of the class in the dataset.</li>
+                                </ul>
+                                <p>The <span class="term-highlight">macro avg</span> calculates metrics for each class independently and takes the average, 
+                                treating all classes equally regardless of their frequency.</p>
+                                <p>The <span class="term-highlight">weighted avg</span> calculates metrics for each class and takes the average weighted by support 
+                                (the number of true instances for each class), accounting for class imbalance.</p>
+                            </div>
+                        
+                        {% else %}
+                            <!-- Supervised Learning Results -->
+                            <div class="row">
+                                {% for model_name, metrics in data.results.items() %}
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <h6>{{ model_name }}</h6>
+                                        <div class="metric-value">{{ "%.2f"|format(metrics.accuracy * 100) }}%</div>
+                                        <p class="text-muted">Accuracy 
+                                            <i class="fas fa-info-circle text-primary" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Percentage of correct predictions. Higher is better."></i>
+                                        </p>
+                                        
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td>Precision 
+                                                    <i class="fas fa-info-circle text-primary" 
+                                                       data-bs-toggle="tooltip" 
+                                                       title="Of all positive predictions, how many were actually positive?"></i>
+                                                </td>
+                                                <td>{{ "%.3f"|format(metrics['weighted avg'].precision) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Recall 
+                                                    <i class="fas fa-info-circle text-primary" 
+                                                       data-bs-toggle="tooltip" 
+                                                       title="Of all actual positives, how many were correctly predicted?"></i>
+                                                </td>
+                                                <td>{{ "%.3f"|format(metrics['weighted avg'].recall) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>F1-Score 
+                                                    <i class="fas fa-info-circle text-primary" 
+                                                       data-bs-toggle="tooltip" 
+                                                       title="Harmonic mean of precision and recall."></i>
+                                                </td>
+                                                <td>{{ "%.3f"|format(metrics['weighted avg']['f1-score']) }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Explanation for Supervised Learning Metrics -->
+                            <div class="explanation">
+                                <h6>Understanding Model Performance</h6>
+                                <p><span class="term-highlight">Accuracy</span>: The percentage of correct predictions. Higher is better, but can be misleading with imbalanced datasets.</p>
+                                <p><span class="term-highlight">Weighted Average Metrics</span>: These metrics are calculated considering the support (number of samples) for each class, 
+                                making them more reliable for imbalanced datasets.</p>
+                                <ul>
+                                    <li><span class="term-highlight">Precision</span>: Of all positive predictions, how many were actually positive?</li>
+                                    <li><span class="term-highlight">Recall</span>: Of all actual positives, how many were correctly predicted?</li>
+                                    <li><span class="term-highlight">F1-Score</span>: Harmonic mean of precision and recall, balancing both metrics.</li>
+                                </ul>
+                                <p>To compare models, look for higher values in all metrics. Models with consistently high scores across all metrics 
+                                are generally preferred.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Dialogs for Detailed Explanations -->
+    <div class="modal fade" id="explanationModal" tabindex="-1" aria-labelledby="explanationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="explanationModalLabel">ML Term Explanation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalExplanationContent">
+                    <!-- Content will be dynamically inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
+</body>
+</html>

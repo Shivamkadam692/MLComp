@@ -1,0 +1,297 @@
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
+from flask_cors import CORS
+import sys
+import os
+import json
+import numpy as np
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from src import preprocess, supervised, unsupervised
+import src.preprocess as preprocess_module
+import pandas as pd
+
+class NumpyEncoder(json.JSONEncoder):
+    """Special json encoder for numpy types"""
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, pd.DataFrame):
+            return obj.to_dict()
+        elif isinstance(obj, pd.Series):
+            return obj.to_dict()
+        return json.JSONEncoder.default(self, obj)
+
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+app.secret_key = 'your_secret_key_here'  # Change this to a random secret key
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max upload size: 16MB
+app.config['UPLOAD_FOLDER'] = 'uploads'
+
+# Global variable to store results
+results_storage = {}
+uploaded_datasets = {}
+
+def run_analysis():
+    """Run all machine learning analyses and store results"""
+    global results_storage
+    
+    try:
+        print("Running ML analysis...")
+        
+        # Structured Dataset 1: Iris
+        print("[+] Loading Iris Dataset...")
+        iris_df = preprocess.load_iris()
+        # Check what the actual target column is called
+        print("Iris columns:", iris_df.columns.tolist())
+        target_col = 'target'  # Based on our data/iris.csv file
+        iris_results = supervised.train_supervised_models(iris_df, target_col)
+        results_storage['iris'] = {
+            'name': 'Iris Classification',
+            'results': iris_results,
+            'dataset_shape': iris_df.shape,
+            'dataset_sample': iris_df.head().to_dict('records'),
+            'columns': iris_df.columns.tolist()
+        }
+
+        # Structured Dataset 2: Titanic
+        print("[+] Loading Titanic Dataset...")
+        titanic_df = preprocess.load_titanic()
+        titanic_results = supervised.train_supervised_models(titanic_df, 'Survived')
+        results_storage['titanic'] = {
+            'name': 'Titanic Survival Prediction',
+            'results': titanic_results,
+            'dataset_shape': titanic_df.shape,
+            'dataset_sample': titanic_df.head().to_dict('records'),
+            'columns': titanic_df.columns.tolist()
+        }
+
+        # Unstructured Dataset: IMDb Sentiment
+        print("[+] Loading IMDb Dataset...")
+        imdb_df = preprocess.load_imdb()
+        imdb_results = supervised.train_sentiment_analysis(imdb_df)
+        results_storage['imdb'] = {
+            'name': 'IMDb Sentiment Analysis',
+            'results': imdb_results,
+            'dataset_shape': imdb_df.shape,
+            'dataset_sample': imdb_df.head().to_dict('records'),
+            'columns': imdb_df.columns.tolist()
+        }
+
+        # Unsupervised Clustering: K-Means on Iris
+        print("[+] Running K-Means Clustering...")
+        target_col = 'target'  # Based on our data/iris.csv file
+        kmeans_results = unsupervised.kmeans_clustering(iris_df.drop(target_col, axis=1))
+        results_storage['kmeans'] = {
+            'name': 'K-Means Clustering (Iris)',
+            'results': kmeans_results,
+            'dataset_shape': iris_df.drop(target_col, axis=1).shape,
+            'dataset_sample': iris_df.drop(target_col, axis=1).head().to_dict('records'),
+            'columns': iris_df.drop(target_col, axis=1).columns.tolist()
+        }
+        
+        print("Analysis complete!")
+        return True
+        
+    except Exception as e:
+        print(f"Error running analysis: {str(e)}")
+        return False
+
+@app.route('/')
+def index():
+    """Main dashboard page"""
+    return render_template('index.html')
+
+@app.route('/api/results')
+def get_results():
+    """API endpoint to get all results"""
+    response = json.dumps(results_storage, cls=NumpyEncoder)
+    return response, 200, {'Content-Type': 'application/json'}
+
+@app.route('/api/run-analysis', methods=['POST'])
+def run_analysis_endpoint():
+    """API endpoint to trigger analysis"""
+    success = run_analysis()
+    response = json.dumps({'success': success}, cls=NumpyEncoder)
+    return response, 200, {'Content-Type': 'application/json'}
+
+@app.route('/api/compare-models', methods=['GET'])
+def compare_models():
+    """API endpoint to compare models across datasets"""
+    try:
+        comparisons = {}
+        
+        # Collect all datasets with supervised learning results
+        supervised_datasets = {}
+        for key, data in results_storage.items():
+            if 'results' in data and isinstance(data['results'], dict) and not key.startswith('kmeans'):
+                # Check if it's supervised learning results
+                first_result = next(iter(data['results'].values()), None)
+                if first_result and 'accuracy' in first_result:
+                    supervised_datasets[key] = data
+        
+        # Compare accuracies across models
+        model_comparison = {}
+        for dataset_key, dataset_data in supervised_datasets.items():
+            dataset_name = dataset_data.get('name', dataset_key)
+            results = dataset_data.get('results', {})
+            
+            for model_name, model_results in results.items():
+                if model_name not in model_comparison:
+                    model_comparison[model_name] = {}
+                
+                accuracy = model_results.get('accuracy', 0) if isinstance(model_results, dict) else 0
+                model_comparison[model_name][dataset_name] = accuracy * 100  # Convert to percentage
+        
+        comparisons['model_accuracy'] = model_comparison
+        
+        # Prepare response
+        response_data = {
+            'success': True,
+            'comparisons': comparisons,
+            'datasets': [data.get('name', key) for key, data in supervised_datasets.items()]
+        }
+        
+        return json.dumps(response_data, cls=NumpyEncoder), 200, {'Content-Type': 'application/json'}
+    except Exception as e:
+        print(f"Error comparing models: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return json.dumps({'error': f'Error comparing models: {str(e)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
+
+@app.route('/api/upload-dataset', methods=['POST'])
+def upload_dataset():
+    """API endpoint to upload and process a dataset"""
+    try:
+        print("Received file upload request")
+        print(f"Request headers: {dict(request.headers)}")
+        print(f"Request files keys: {list(request.files.keys())}")
+        
+        if 'file' not in request.files:
+            print("No file provided in request")
+            return json.dumps({'error': 'No file provided'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+        
+        file = request.files['file']
+        print(f"Received file: {file.filename}")
+        print(f"File content type: {file.content_type}")
+        
+        if file.filename == '':
+            print("Empty filename")
+            return json.dumps({'error': 'No file selected'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+        
+        if file and file.filename.endswith('.csv'):
+            try:
+                # Save the file temporarily
+                filename = file.filename
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                print(f"Saving file to: {file_path}")
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file.save(file_path)
+                
+                # Process the CSV file
+                print("Reading CSV file")
+                df = pd.read_csv(file_path)
+                print(f"CSV file read successfully. Shape: {df.shape}")
+                
+                # Run analysis on the uploaded dataset
+                # For simplicity, we'll assume it's a classification task
+                # In a real application, you'd want to ask the user for the target column
+                target_column = df.columns[-1]  # Assume last column is target
+                print(f"Target column: {target_column}")
+                            
+                # Preprocess the data to handle non-numeric values
+                print("Preprocessing data")
+                df_processed, label_encoders = preprocess_module.preprocess_uploaded_dataset(df, target_column)
+                df = df_processed
+                print(f"Data preprocessed. Shape: {df.shape}")
+            except Exception as save_error:
+                print(f"Error saving or reading file: {str(save_error)}")
+                import traceback
+                traceback.print_exc()
+                return json.dumps({'error': f'Error saving or reading file: {str(save_error)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
+            
+            # Validate the dataset
+            if df.empty:
+                print("Dataset is empty")
+                return json.dumps({'error': 'The uploaded CSV file is empty'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+            
+            if len(df.columns) < 2:
+                print("Dataset has less than 2 columns")
+                return json.dumps({'error': 'The uploaded CSV file must have at least 2 columns'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+            
+            # Store the dataset
+            dataset_name = os.path.splitext(filename)[0]
+            uploaded_datasets[dataset_name] = df
+            
+            # Target column was already determined above
+            
+            # Validate target column
+            if target_column not in df.columns:
+                print(f"Target column {target_column} not found in dataset")
+                return json.dumps({'error': f'Target column "{target_column}" not found in dataset'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+            
+            # Check if target column has enough classes for classification
+            unique_classes = df[target_column].nunique()
+            print(f"Unique classes in target column: {unique_classes}")
+            if unique_classes < 2:
+                print("Not enough unique classes for classification")
+                return json.dumps({'error': 'Target column must have at least 2 unique classes for classification'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+            
+            # Run supervised learning models
+            print("Training supervised models")
+            try:
+                results = supervised.train_supervised_models(df, target_column)
+                print("Models trained successfully")
+            except Exception as model_error:
+                print(f"Error training models: {str(model_error)}")
+                return json.dumps({'error': f'Error training models: {str(model_error)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
+            
+            # Store results
+            results_storage[f'upload_{dataset_name}'] = {
+                'name': f'{dataset_name} Analysis',
+                'results': results,
+                'dataset_shape': df.shape,
+                'dataset_name': dataset_name,
+                'target_column': target_column,
+                'dataset_sample': df.head().to_dict('records'),
+                'columns': df.columns.tolist()
+            }
+            
+            response_data = {
+                'success': True,
+                'dataset_name': dataset_name,
+                'results': results,
+                'message': f'Successfully analyzed {filename}. Found {df.shape[0]} rows and {df.shape[1]} columns.'
+            }
+            
+            print("Upload processed successfully")
+            return json.dumps(response_data, cls=NumpyEncoder), 200, {'Content-Type': 'application/json'}
+        else:
+            print("Invalid file format")
+            return json.dumps({'error': 'Invalid file format. Please upload a CSV file.'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
+    except Exception as e:
+        print(f"Error uploading dataset: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return json.dumps({'error': f'Internal server error: {str(e)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
+
+@app.route('/results/<analysis_type>')
+def show_results(analysis_type):
+    """Show detailed results for a specific analysis"""
+    if analysis_type not in results_storage:
+        return "Analysis not found", 404
+    return render_template('results.html', analysis_type=analysis_type, data=results_storage[analysis_type])
+
+if __name__ == '__main__':
+    # Create templates directory if it doesn't exist
+    if not os.path.exists('templates'):
+        os.makedirs('templates')
+    
+    # Run initial analysis
+    run_analysis()
+    
+    # Start Flask app
+    app.run(debug=True, host='0.0.0.0', port=5000)

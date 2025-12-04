@@ -1,0 +1,5 @@
+feature1,feature2,target
+1.0,2.0,classA
+2.0,3.0,classB
+3.0,4.0,classA
+4.0,5.0,classB
