@@ -130,10 +130,17 @@ def compare_models():
             if 'results' in data and isinstance(data['results'], dict) and not key.startswith('kmeans'):
                 # Check if it's supervised learning results
                 first_result = next(iter(data['results'].values()), None)
-                if first_result and 'accuracy' in first_result:
-                    supervised_datasets[key] = data
+                # For classification results, there will be an accuracy key
+                # For regression results, there will be mse, rmse, or r2 keys
+                if first_result:
+                    # Check for any of the common supervised learning metrics
+                    has_classification_metrics = 'accuracy' in first_result
+                    has_regression_metrics = 'mse' in first_result or 'rmse' in first_result or 'r2' in first_result
+                    
+                    if has_classification_metrics or has_regression_metrics:
+                        supervised_datasets[key] = data
         
-        # Compare accuracies across models
+        # Compare metrics across models
         model_comparison = {}
         for dataset_key, dataset_data in supervised_datasets.items():
             dataset_name = dataset_data.get('name', dataset_key)
@@ -143,8 +150,29 @@ def compare_models():
                 if model_name not in model_comparison:
                     model_comparison[model_name] = {}
                 
-                accuracy = model_results.get('accuracy', 0) if isinstance(model_results, dict) else 0
-                model_comparison[model_name][dataset_name] = accuracy * 100  # Convert to percentage
+                # Handle both classification and regression results
+                if isinstance(model_results, dict):
+                    if 'accuracy' in model_results:
+                        # Classification accuracy
+                        accuracy = model_results.get('accuracy', 0)
+                        model_comparison[model_name][dataset_name] = accuracy * 100  # Convert to percentage
+                    elif 'r2' in model_results:
+                        # Regression R² score
+                        r2 = model_results.get('r2', 0)
+                        model_comparison[model_name][dataset_name] = r2 * 100  # Convert to percentage for consistency
+                    elif 'mse' in model_results:
+                        # For MSE, we'll convert to a pseudo-accuracy (lower is better, so invert)
+                        # This is a simplified approach - in practice, you might want to normalize this differently
+                        mse = model_results.get('mse', 0)
+                        # Convert MSE to a pseudo-accuracy (100 - normalized MSE)
+                        # This is just for display purposes in the comparison table
+                        pseudo_accuracy = max(0, min(100, 100 - (mse * 10)))  # Arbitrary scaling
+                        model_comparison[model_name][dataset_name] = pseudo_accuracy
+                    else:
+                        # Default to 0 if no recognizable metric
+                        model_comparison[model_name][dataset_name] = 0
+                else:
+                    model_comparison[model_name][dataset_name] = 0
         
         comparisons['model_accuracy'] = model_comparison
         

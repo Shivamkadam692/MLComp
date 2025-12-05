@@ -19,10 +19,19 @@ def train_supervised_models(df, target_col):
         y_type = type_of_target(y)
         print(f"Target variable type: {y_type}")
         
+        # Enhanced detection for regression problems
+        # If there are many unique values relative to sample size, it's likely regression
+        unique_ratio = len(np.unique(y)) / len(y)
+        print(f"Unique values ratio: {unique_ratio:.4f}")
+        
+        # Split the data
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        if y_type in ['continuous', 'continuous-multioutput']:
+        # Decide on problem type
+        # Use regression if type is continuous or if there are too many classes for classification
+        if y_type in ['continuous', 'continuous-multioutput'] or unique_ratio > 0.5:
             # Regression problem
+            print("Treating as REGRESSION problem")
             models = {
                 "Decision Tree": DecisionTreeRegressor(random_state=42),
                 "Linear Regression": LinearRegression(),
@@ -47,6 +56,7 @@ def train_supervised_models(df, target_col):
                 print(f"MSE: {mse:.4f}, RMSE: {np.sqrt(mse):.4f}, R²: {r2:.4f}")
         else:
             # Classification problem
+            print("Treating as CLASSIFICATION problem")
             models = {
                 "Decision Tree": DecisionTreeClassifier(random_state=42),
                 "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
@@ -58,9 +68,9 @@ def train_supervised_models(df, target_col):
                 print(f"\n{name} Results:")
                 model.fit(X_train, y_train)
                 y_pred = model.predict(X_test)
-                report = classification_report(y_test, y_pred, output_dict=True)
+                report = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
                 results[name] = report
-                print(classification_report(y_test, y_pred))
+                print(classification_report(y_test, y_pred, zero_division=0))
         
         return results
     except Exception as e:

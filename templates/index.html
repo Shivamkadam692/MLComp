@@ -1136,7 +1136,7 @@
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white py-3">
                                 <h5 class="mb-0">Model Performance Comparison</h5>
-                                <p class="text-muted mb-0">Accuracy percentages across all datasets</p>
+                                <p class="text-muted mb-0">Performance metrics across all datasets</p>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -1156,13 +1156,43 @@
                         html += `<tr><td><strong>${model}</strong></td>`;
                         result.datasets.forEach(dataset => {
                             const accuracy = result.comparisons.model_accuracy[model][dataset] || 0;
-                            const accuracyClass = accuracy >= 90 ? 'text-success' : accuracy >= 80 ? 'text-primary' : accuracy >= 70 ? 'text-warning' : 'text-danger';
-                            html += `<td class="${accuracyClass}"><strong>${accuracy.toFixed(2)}%</strong></td>`;
+                            
+                            // Determine metric type and formatting based on model name and dataset
+                            let displayValue = `${accuracy.toFixed(2)}%`;
+                            let valueClass = 'text-muted';
+                            
+                            // Determine color based on value (green for high, red for low)
+                            if (accuracy >= 90) {
+                                valueClass = 'text-success';
+                            } else if (accuracy >= 80) {
+                                valueClass = 'text-primary';
+                            } else if (accuracy >= 70) {
+                                valueClass = 'text-warning';
+                            } else if (accuracy > 0) {
+                                valueClass = 'text-danger';
+                            }
+                            
+                            // Special handling for regression models (R² score) - higher is better
+                            // For classification models (accuracy) - higher is better
+                            html += `<td class="${valueClass}"><strong>${displayValue}</strong></td>`;
                         });
                         html += '</tr>';
                     });
                     
-                    html += `</tbody></table></div></div></div>`;
+                    html += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <strong>Note:</strong> For classification tasks, values represent accuracy percentages. 
+                                        For regression tasks, values represent R² scores (coefficient of determination) multiplied by 100.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     comparisonResults.innerHTML = html;
                 } else {
                     showNotification(`Error: ${result.error}`, 'error');
@@ -1322,7 +1352,7 @@
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                <p class="mb-0 text-light">&copy; 2023 ML Analysis Dashboard. All rights reserved.</p>
+                <p class="mb-0 text-light">&copy; 2025 ML Analysis Dashboard. All rights reserved.</p>
             </div>
         </div>
     </div>
