@@ -1,9 +1,11 @@
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
+from sklearn.metrics import classification_report, mean_squared_error, r2_score
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.svm import SVC, SVR
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.utils.multiclass import type_of_target
+import numpy as np
 
 def train_supervised_models(df, target_col):
     try:
@@ -12,22 +14,53 @@ def train_supervised_models(df, target_col):
             
         X = df.drop(columns=[target_col])
         y = df[target_col]
+        
+        # Determine if this is a classification or regression problem
+        y_type = type_of_target(y)
+        print(f"Target variable type: {y_type}")
+        
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        models = {
-            "Decision Tree": DecisionTreeClassifier(random_state=42),
-            "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
-            "SVM": SVC(random_state=42)
-        }
-
-        results = {}
-        for name, model in models.items():
-            print(f"\n{name} Results:")
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-            report = classification_report(y_test, y_pred, output_dict=True)
-            results[name] = report
-            print(classification_report(y_test, y_pred))
+        if y_type in ['continuous', 'continuous-multioutput']:
+            # Regression problem
+            models = {
+                "Decision Tree": DecisionTreeRegressor(random_state=42),
+                "Linear Regression": LinearRegression(),
+                "SVR": SVR()
+            }
+            
+            results = {}
+            for name, model in models.items():
+                print(f"\n{name} Results:")
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
+                
+                # Calculate regression metrics
+                mse = mean_squared_error(y_test, y_pred)
+                r2 = r2_score(y_test, y_pred)
+                
+                results[name] = {
+                    'mse': mse,
+                    'rmse': np.sqrt(mse),
+                    'r2': r2
+                }
+                print(f"MSE: {mse:.4f}, RMSE: {np.sqrt(mse):.4f}, R²: {r2:.4f}")
+        else:
+            # Classification problem
+            models = {
+                "Decision Tree": DecisionTreeClassifier(random_state=42),
+                "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
+                "SVM": SVC(random_state=42)
+            }
+            
+            results = {}
+            for name, model in models.items():
+                print(f"\n{name} Results:")
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
+                report = classification_report(y_test, y_pred, output_dict=True)
+                results[name] = report
+                print(classification_report(y_test, y_pred))
         
         return results
     except Exception as e:

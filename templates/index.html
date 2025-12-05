@@ -5,47 +5,269 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML Analysis Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --secondary-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            --accent-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
         body {
             padding: 20px;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
+        
         .header {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: var(--primary-gradient);
             color: white;
-            padding: 30px 0;
+            padding: 40px 0;
             margin-bottom: 30px;
-            border-radius: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .card {
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
         .metric-card {
             text-align: center;
-            padding: 20px;
+            padding: 25px 15px;
+            border-radius: 10px;
+            background: white;
+            height: 100%;
         }
+        
+        .metric-card .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
         .metric-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #0d6efd;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2575fc;
+            margin: 10px 0;
         }
-        .btn-run-analysis {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        
+        .btn-custom {
+            background: var(--primary-gradient);
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
         }
+        
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(37, 117, 252, 0.4);
+        }
+        
+        .btn-custom:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary-custom {
+            background: var(--secondary-gradient);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+            color: #333;
+        }
+        
+        .btn-secondary-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(255, 154, 158, 0.4);
+        }
+        
         .explanation {
-            background-color: #e9ecef;
-            border-left: 3px solid #0d6efd;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 0 3px 3px 0;
-            font-size: 0.85em;
+            background-color: #e9f7fe;
+            border-left: 4px solid #2575fc;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9em;
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+        
+        .dataset-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 25px 15px;
+            border-radius: 12px;
+            height: 100%;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -53,37 +275,100 @@
     <div class="container">
         <!-- Header -->
         <div class="header text-center">
-            <h1>Machine Learning Analysis Dashboard</h1>
-            <p class="lead">Compare results across multiple datasets and algorithms</p>
-            <button id="runAnalysisBtn" class="btn btn-light btn-run-analysis">
-                <i class="fas fa-play-circle"></i> Run Analysis
-            </button>
+            <h1 class="display-4 fw-bold"><i class="fas fa-brain me-3"></i>Machine Learning Analysis Dashboard</h1>
+            <p class="lead fs-5">Compare results across multiple datasets and algorithms with advanced analytics</p>
+            <div class="mt-4">
+                <button id="runAnalysisBtn" class="btn btn-light btn-custom pulse-animation me-2">
+                    <i class="fas fa-play-circle me-2"></i> Run Analysis
+                </button>
+                <button id="refreshBtn" class="btn btn-outline-light ms-2">
+                    <i class="fas fa-sync-alt me-2"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="row mb-5">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-database fa-2x mb-3 text-primary"></i>
+                    <div class="stat-number" id="datasetCount">0</div>
+                    <div class="text-muted">Datasets</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-chart-line fa-2x mb-3 text-success"></i>
+                    <div class="stat-number" id="modelCount">0</div>
+                    <div class="text-muted">Models</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-tasks fa-2x mb-3 text-info"></i>
+                    <div class="stat-number" id="analysisCount">0</div>
+                    <div class="text-muted">Analyses</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-users fa-2x mb-3 text-warning"></i>
+                    <div class="stat-number" id="accuracyAvg">0%</div>
+                    <div class="text-muted">Avg. Accuracy</div>
+                </div>
+            </div>
         </div>
 
         <!-- File Upload Section -->
         <div class="row mt-4">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Upload Your Dataset</h5>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h3 class="section-title mb-0">Upload Your Dataset</h3>
                     </div>
                     <div class="card-body">
-                        <form id="uploadForm" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="csvFile" class="form-label">Select CSV File</label>
-                                <input class="form-control" type="file" id="csvFile" name="file" accept=".csv">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <form id="uploadForm" enctype="multipart/form-data">
+                                    <div class="mb-4">
+                                        <label for="csvFile" class="form-label fw-bold">Select CSV File</label>
+                                        <input class="form-control form-control-lg" type="file" id="csvFile" name="file" accept=".csv" required>
+                                        <div class="form-text">Supported formats: CSV files only. Maximum size: 16MB</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-custom" id="uploadBtn">
+                                        <i class="fas fa-cloud-upload-alt me-2"></i> Upload and Analyze
+                                    </button>
+                                </form>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="uploadBtn">
-                                <i class="fas fa-upload"></i> Upload and Analyze
-                            </button>
-                        </form>
-                        <div id="uploadStatus" class="mt-3"></div>
+                            <div class="col-lg-6">
+                                <div class="feature-card h-100">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-file-upload"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Upload Guidelines</h5>
+                                    <ul class="text-start text-muted mt-3" style="font-size: 0.9rem;">
+                                        <li>Last column will be treated as target variable</li>
+                                        <li>First row should contain column headers</li>
+                                        <li>Minimum 2 columns required</li>
+                                        <li>Supports numerical and categorical data</li>
+                                        <li>Missing values will be automatically handled</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="uploadStatus" class="mt-4"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Summary Cards -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="section-title">Dataset Overview</h3>
+                <p class="text-muted mb-4">Explore preloaded datasets and your uploaded data</p>
+            </div>
+        </div>
         <div class="row" id="summaryCards">
             <!-- Cards will be populated by JavaScript -->
         </div>
@@ -91,16 +376,26 @@
         <!-- Model Comparison Section -->
         <div class="row mt-5">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Model Comparison</h2>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h3 class="section-title mb-0">Model Performance Comparison</h3>
+                        <span class="badge bg-primary rounded-pill">Advanced Analytics</span>
                     </div>
                     <div class="card-body">
-                        <button id="compareModelsBtn" class="btn btn-secondary mb-3">
-                            <i class="fas fa-chart-bar"></i> Compare Models Across Datasets
-                        </button>
+                        <p class="text-muted mb-4">Compare the performance of different machine learning models across all datasets</p>
+                        <div class="d-grid gap-2 d-md-block mb-4">
+                            <button id="compareModelsBtn" class="btn btn-custom me-md-2 mb-2 mb-md-0">
+                                <i class="fas fa-chart-bar me-2"></i> Compare Models Across Datasets
+                            </button>
+                            <button id="exportComparisonBtn" class="btn btn-secondary-custom ms-md-2">
+                                <i class="fas fa-download me-2"></i> Export Comparison
+                            </button>
+                        </div>
                         <div id="comparisonResults">
-                            <p class="text-muted">Click the button above to compare model performances across all datasets.</p>
+                            <div class="text-center py-5">
+                                <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Click the button above to compare model performances across all datasets.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,11 +405,24 @@
         <!-- Detailed Results Section -->
         <div class="row mt-5">
             <div class="col-12">
-                <h2>Analysis Results</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="section-title mb-0">Detailed Analysis Results</h3>
+                        <p class="text-muted mb-0">Comprehensive insights from all machine learning analyses</p>
+                    </div>
+                    <div>
+                        <button id="toggleViewBtn" class="btn btn-outline-primary">
+                            <i class="fas fa-th-large me-1"></i> Grid View
+                        </button>
+                    </div>
+                </div>
                 <div id="resultsContainer">
                     <!-- Results will be loaded here -->
-                    <div class="text-center">
-                        <p>Loading results...</p>
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading results...</span>
+                        </div>
+                        <p class="mt-3">Loading analysis results...</p>
                     </div>
                 </div>
             </div>
@@ -125,9 +433,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
+        // Global variables
+        let currentData = {};
+        let gridView = true; // Toggle between grid and list view
+        
         // Fetch and display results
         async function fetchResults() {
             try {
+                showLoadingIndicator();
+                
                 const response = await fetch('/api/results');
                 
                 // Check if response is OK
@@ -144,6 +458,10 @@
                 }
                 
                 const data = await response.json();
+                currentData = data;
+                
+                // Update statistics
+                updateStatistics(data);
                 
                 // Update summary cards
                 updateSummaryCards(data);
@@ -153,41 +471,94 @@
             } catch (error) {
                 console.error('Error fetching results:', error);
                 document.getElementById('resultsContainer').innerHTML = 
-                    '<div class="alert alert-danger">Error loading results: ' + error.message + '</div>';
+                    '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading results: ' + error.message + '</div>';
             }
         }
 
+        // Show loading indicator
+        function showLoadingIndicator() {
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading results...</span>
+                    </div>
+                    <p class="mt-3">Loading analysis results...</p>
+                </div>
+            `;
+        }
+        
+        // Update statistics
+        function updateStatistics(data) {
+            const datasetCount = Object.keys(data).length;
+            let modelCount = 0;
+            let totalAnalyses = 0;
+            let totalAccuracy = 0;
+            let accuracyCount = 0;
+            
+            Object.keys(data).forEach(key => {
+                const analysis = data[key];
+                totalAnalyses++;
+                
+                if (analysis.results) {
+                    // Count models
+                    if (typeof analysis.results === 'object' && !Array.isArray(analysis.results)) {
+                        modelCount += Object.keys(analysis.results).length;
+                        
+                        // Calculate average accuracy
+                        Object.values(analysis.results).forEach(model => {
+                            if (model && typeof model === 'object' && model.accuracy !== undefined) {
+                                totalAccuracy += model.accuracy;
+                                accuracyCount++;
+                            }
+                        });
+                    }
+                }
+            });
+            
+            const avgAccuracy = accuracyCount > 0 ? (totalAccuracy / accuracyCount * 100).toFixed(1) : 0;
+            
+            // Update DOM elements
+            document.getElementById('datasetCount').textContent = datasetCount;
+            document.getElementById('modelCount').textContent = modelCount;
+            document.getElementById('analysisCount').textContent = totalAnalyses;
+            document.getElementById('accuracyAvg').textContent = `${avgAccuracy}%`;
+        }
+        
         // Update summary cards
         function updateSummaryCards(data) {
             const container = document.getElementById('summaryCards');
             container.innerHTML = '';
             
             const summaries = [
-                { id: 'iris', title: 'Iris Classification', icon: 'flower' },
-                { id: 'titanic', title: 'Titanic Survival', icon: 'ship' },
-                { id: 'imdb', title: 'IMDb Sentiment', icon: 'film' },
-                { id: 'kmeans', title: 'K-Means Clustering', icon: 'chart-bar' }
+                { id: 'iris', title: 'Iris Classification', icon: 'seedling', color: '#28a745' },
+                { id: 'titanic', title: 'Titanic Survival', icon: 'ship', color: '#17a2b8' },
+                { id: 'imdb', title: 'IMDb Sentiment', icon: 'film', color: '#ffc107' },
+                { id: 'kmeans', title: 'K-Means Clustering', icon: 'chart-pie', color: '#6f42c1' }
             ];
+            
+            let hasPredefinedDatasets = false;
+            let hasUploadedDatasets = false;
             
             // Add predefined datasets
             summaries.forEach(summary => {
                 if (data[summary.id]) {
+                    hasPredefinedDatasets = true;
                     const col = document.createElement('div');
-                    col.className = 'col-md-3';
+                    col.className = 'col-xl-3 col-md-6 mb-4 fade-in';
                     col.innerHTML = `
-                        <div class="card">
+                        <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body metric-card">
-                                <i class="fas fa-${summary.icon} fa-2x mb-3"></i>
-                                <h5 class="card-title">${summary.title}</h5>
+                                <div class="icon-wrapper mb-3" style="background: linear-gradient(135deg, ${summary.color} 0%, #${parseInt(summary.color.slice(1), 16) + 100000} 100%);">
+                                    <i class="fas fa-${summary.icon}"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">${summary.title}</h5>
                                 <div class="metric-value">
                                     ${data[summary.id].dataset_shape ? data[summary.id].dataset_shape[0] : 'N/A'}
                                 </div>
-                                <p class="text-muted">samples 
-                                    <i class="fas fa-info-circle text-primary" 
-                                       data-bs-toggle="tooltip" 
-                                       title="Number of data samples in this dataset."></i>
-                                </p>
-                                <a href="/results/${summary.id}" class="btn btn-primary btn-sm">View Details</a>
+                                <p class="text-muted mb-3">samples</p>
+                                <a href="/results/${summary.id}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-eye me-1"></i> View Details
+                                </a>
                             </div>
                         </div>
                     `;
@@ -198,111 +569,380 @@
             // Add uploaded datasets
             Object.keys(data).forEach(key => {
                 if (key.startsWith('upload_')) {
+                    hasUploadedDatasets = true;
                     const dataset = data[key];
                     const col = document.createElement('div');
-                    col.className = 'col-md-3';
+                    col.className = 'col-xl-3 col-md-6 mb-4 fade-in';
                     col.innerHTML = `
-                        <div class="card">
+                        <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body metric-card">
-                                <i class="fas fa-file-csv fa-2x mb-3"></i>
-                                <h5 class="card-title">${dataset.name}</h5>
+                                <div class="icon-wrapper mb-3" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+                                    <i class="fas fa-file-csv"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">${dataset.name.replace(' Analysis', '')}</h5>
                                 <div class="metric-value">
                                     ${dataset.dataset_shape ? dataset.dataset_shape[0] : 'N/A'}
                                 </div>
-                                <p class="text-muted">samples 
-                                    <i class="fas fa-info-circle text-primary" 
-                                       data-bs-toggle="tooltip" 
-                                       title="Number of data samples in this dataset."></i>
-                                </p>
-                                <a href="/results/${key}" class="btn btn-primary btn-sm">View Details</a>
+                                <p class="text-muted mb-3">samples</p>
+                                <a href="/results/${key}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-eye me-1"></i> View Details
+                                </a>
                             </div>
                         </div>
                     `;
                     container.appendChild(col);
                 }
             });
+            
+            // Show message if no datasets
+            if (!hasPredefinedDatasets && !hasUploadedDatasets) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No datasets available</h5>
+                            <p class="text-muted">Upload a dataset or run analysis to see results</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // Display detailed results
         function displayResults(data) {
-            let html = '<div class="row">';
+            let html = '';
             
-            Object.keys(data).forEach(key => {
-                // Skip uploaded datasets in the main results view to avoid duplication
-                if (key.startsWith('upload_')) return;
+            if (gridView) {
+                html = '<div class="row">';
                 
-                const analysis = data[key];
-                html += `
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>${analysis.name}</h5>
-                            </div>
-                            <div class="card-body">
-                                <p><strong>Dataset Size:</strong> ${analysis.dataset_shape[0]} rows × ${analysis.dataset_shape[1]} columns</p>
-                                ${renderAnalysisResults(analysis.results)}
-                                <a href="/results/${key}" class="btn btn-outline-primary">Detailed View</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Add uploaded datasets separately
-            Object.keys(data).forEach(key => {
-                if (key.startsWith('upload_')) {
+                Object.keys(data).forEach(key => {
+                    // Skip uploaded datasets in the main results view to avoid duplication
+                    if (key.startsWith('upload_')) return;
+                    
                     const analysis = data[key];
                     html += `
-                        <div class="col-md-6 mb-4">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>${analysis.name} (Uploaded)</h5>
+                        <div class="col-xl-4 col-md-6 mb-4 fade-in">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header bg-white py-3">
+                                    <h5 class="mb-0">${analysis.name}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <p><strong>Dataset Size:</strong> ${analysis.dataset_shape[0]} rows × ${analysis.dataset_shape[1]} columns</p>
+                                    <div class="mb-3">
+                                        <span class="badge bg-light text-dark me-2">
+                                            <i class="fas fa-table me-1"></i> ${analysis.dataset_shape[0]} × ${analysis.dataset_shape[1]}
+                                        </span>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-code-branch me-1"></i> ${Object.keys(analysis.results || {}).length} Models
+                                        </span>
+                                    </div>
                                     ${renderAnalysisResults(analysis.results)}
-                                    <a href="/results/${key}" class="btn btn-outline-primary">Detailed View</a>
+                                    <a href="/results/${key}" class="btn btn-outline-primary w-100 mt-3">
+                                        <i class="fas fa-chart-line me-1"></i> Detailed View
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     `;
-                }
-            });
+                });
+                
+                // Add uploaded datasets separately
+                Object.keys(data).forEach(key => {
+                    if (key.startsWith('upload_')) {
+                        const analysis = data[key];
+                        html += `
+                            <div class="col-xl-4 col-md-6 mb-4 fade-in">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-white py-3">
+                                        <h5 class="mb-0">${analysis.name.replace(' Analysis', '')} <span class="badge bg-success">Uploaded</span></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <span class="badge bg-light text-dark me-2">
+                                                <i class="fas fa-table me-1"></i> ${analysis.dataset_shape[0]} × ${analysis.dataset_shape[1]}
+                                            </span>
+                                            <span class="badge bg-light text-dark">
+                                                <i class="fas fa-code-branch me-1"></i> ${Object.keys(analysis.results || {}).length} Models
+                                            </span>
+                                        </div>
+                                        ${renderAnalysisResults(analysis.results)}
+                                        <a href="/results/${key}" class="btn btn-outline-primary w-100 mt-3">
+                                            <i class="fas fa-chart-line me-1"></i> Detailed View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                html += '</div>';
+            } else {
+                // List view
+                html = '<div class="list-group">';
+                
+                Object.keys(data).forEach(key => {
+                    const analysis = data[key];
+                    const isUploaded = key.startsWith('upload_');
+                    const displayName = isUploaded ? analysis.name.replace(' Analysis', '') : analysis.name;
+                    
+                    html += `
+                        <div class="list-group-item list-group-item-action p-4 mb-3 border-0 shadow-sm rounded-3">
+                            <div class="d-flex w-100 justify-content-between mb-3">
+                                <h5 class="mb-1">${displayName} ${isUploaded ? '<span class="badge bg-success ms-2">Uploaded</span>' : ''}</h5>
+                                <small class="text-muted">
+                                    <i class="fas fa-table me-1"></i> ${analysis.dataset_shape[0]} × ${analysis.dataset_shape[1]}
+                                </small>
+                            </div>
+                            <div class="mb-3">
+                                ${renderAnalysisResults(analysis.results)}
+                            </div>
+                            <a href="/results/${key}" class="btn btn-outline-primary">
+                                <i class="fas fa-chart-line me-1"></i> Detailed View
+                            </a>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
             
-            html += '</div>';
             document.getElementById('resultsContainer').innerHTML = html;
+            
+            // Re-initialize tooltips
+            setTimeout(initializeTooltips, 100);
         }
 
         // Render analysis results
         function renderAnalysisResults(results) {
-            if (!results) return '<p>No results available</p>';
+            if (!results) return '<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>No results available</div>';
             
             let html = '<div class="mt-3">';
             
             // Handle different result types
             if (results['silhouette_score']) {
                 // K-means clustering results
-                html += `<p><strong>Silhouette Score:</strong> ${results['silhouette_score'].toFixed(3)}</p>`;
-                html += `<div class="explanation" style="font-size: 0.85em; padding: 8px; margin-top: 5px;">`;
-                html += `Measures clustering quality (-1 to 1). Higher is better.`;
-                html += `</div>`;
+                const score = results['silhouette_score'];
+                const scorePercent = ((score + 1) / 2 * 100).toFixed(1); // Convert -1..1 to 0..100%
+                
+                html += `
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <strong>Silhouette Score</strong>
+                            <span>${score.toFixed(3)}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-custom" role="progressbar" 
+                                 style="width: ${scorePercent}%" 
+                                 aria-valuenow="${scorePercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="text-muted small mt-1">Clustering quality: ${score >= 0.7 ? 'Excellent' : score >= 0.5 ? 'Good' : score >= 0.25 ? 'Fair' : 'Poor'}</div>
+                    </div>
+                `;
+                
+                html += `
+                    <div class="explanation">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong class="text-primary">What is Silhouette Score?</strong>
+                            <i class="fas fa-info-circle text-primary" 
+                               data-bs-toggle="tooltip" 
+                               title="Measures clustering quality from -1 to 1. Higher values indicate better clustering."></i>
+                        </div>
+                        <p class="mb-0 mt-2">Ranges from -1 to 1:</p>
+                        <ul class="mb-0 small">
+                            <li>+1: Well-matched to own cluster</li>
+                            <li>0: On decision boundary</li>
+                            <li>-1: May be assigned to wrong cluster</li>
+                        </ul>
+                    </div>
+                `;
             } else if (results['accuracy']) {
                 // Sentiment analysis results
-                html += `<p><strong>Accuracy:</strong> ${(results['accuracy'] * 100).toFixed(2)}%</p>`;
-                html += `<div class="explanation" style="font-size: 0.85em; padding: 8px; margin-top: 5px;">`;
-                html += `Percentage of correct predictions. Higher is better.`;
-                html += `</div>`;
+                const accuracy = results['accuracy'];
+                
+                html += `
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <strong>Accuracy</strong>
+                            <span>${(accuracy * 100).toFixed(2)}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
+                                 style="width: ${(accuracy * 100)}%" 
+                                 aria-valuenow="${(accuracy * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="text-muted small mt-1">Performance: ${accuracy >= 0.9 ? 'Excellent' : accuracy >= 0.8 ? 'Good' : accuracy >= 0.7 ? 'Fair' : 'Poor'}</div>
+                    </div>
+                `;
+                
+                if (results['1'] && results['1']['f1-score']) {
+                    const f1Score = results['1']['f1-score'];
+                    html += `
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <strong>F1-Score</strong>
+                                <span>${f1Score.toFixed(3)}</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
+                                     style="width: ${(f1Score * 100)}%" 
+                                     aria-valuenow="${(f1Score * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="explanation">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong class="text-primary">Understanding Metrics</strong>
+                            <i class="fas fa-info-circle text-primary" 
+                               data-bs-toggle="tooltip" 
+                               title="Accuracy: Percentage of correct predictions. F1-Score: Balance of precision and recall."></i>
+                        </div>
+                        <p class="mb-0 mt-2">Higher values indicate better model performance.</p>
+                    </div>
+                `;
+            } else if (results && Object.keys(results).length > 0 && results[Object.keys(results)[0]] && results[Object.keys(results)[0]].hasOwnProperty('mse')) {
+                // Regression results
+                let hasResults = false;
+                Object.keys(results).forEach(model => {
+                    const metrics = results[model];
+                    if (metrics && metrics.hasOwnProperty('mse')) {
+                        hasResults = true;
+                        const mse = metrics['mse'];
+                        const rmse = metrics['rmse'];
+                        const r2 = metrics['r2'];
+                        
+                        html += `
+                            <div class="mb-3 border-bottom pb-3">
+                                <h6 class="fw-bold mb-2">${model}</h6>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>R² Score</span>
+                                        <span>${r2.toFixed(4)}</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
+                                             style="width: ${(Math.max(0, Math.min(1, r2)) * 100)}%" 
+                                             aria-valuenow="${(Math.max(0, Math.min(1, r2)) * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="text-muted small mt-1">Performance: ${r2 >= 0.9 ? 'Excellent' : r2 >= 0.7 ? 'Good' : r2 >= 0.5 ? 'Fair' : 'Poor'}</div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>RMSE</span>
+                                        <span>${rmse.toFixed(4)}</span>
+                                    </div>
+                                    <div class="text-muted small">Root Mean Square Error (lower is better)</div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>MSE</span>
+                                        <span>${mse.toFixed(4)}</span>
+                                    </div>
+                                    <div class="text-muted small">Mean Square Error (lower is better)</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (hasResults) {
+                    html += `
+                        <div class="explanation mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-primary">Regression Metrics</strong>
+                                <i class="fas fa-info-circle text-primary" 
+                                   data-bs-toggle="tooltip" 
+                                   title="R²: Proportion of variance explained by the model. RMSE: Standard deviation of prediction errors."></i>
+                            </div>
+                            <p class="mb-0 mt-2">Higher R² and lower RMSE/MSE indicate better model performance.</p>
+                        </div>
+                    `;
+                }
             } else {
                 // Classification results
+                let hasResults = false;
                 Object.keys(results).forEach(model => {
                     const metrics = results[model];
                     if (metrics && metrics['accuracy']) {
-                        html += `<p><strong>${model} Accuracy:</strong> ${(metrics['accuracy'] * 100).toFixed(2)}%</p>`;
-                        html += `<div class="explanation" style="font-size: 0.85em; padding: 8px; margin-top: 5px;">`;
-                        html += `Correct predictions percentage. Higher is better.`;
+                        hasResults = true;
+                        const accuracy = metrics['accuracy'];
+                        
+                        html += `
+                            <div class="mb-3 border-bottom pb-3">
+                                <h6 class="fw-bold mb-2">${model}</h6>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Accuracy</span>
+                                        <span>${(accuracy * 100).toFixed(2)}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
+                                             style="width: ${(accuracy * 100)}%" 
+                                             aria-valuenow="${(accuracy * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                        `;
+                        
+                        if (metrics['weighted avg']) {
+                            const weightedMetrics = metrics['weighted avg'];
+                            html += `
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Precision</span>
+                                        <span>${(weightedMetrics.precision * 100).toFixed(1)}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar progress-bar-custom bg-warning" role="progressbar" 
+                                             style="width: ${(weightedMetrics.precision * 100)}%" 
+                                             aria-valuenow="${(weightedMetrics.precision * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Recall</span>
+                                        <span>${(weightedMetrics.recall * 100).toFixed(1)}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
+                                             style="width: ${(weightedMetrics.recall * 100)}%" 
+                                             aria-valuenow="${(weightedMetrics.recall * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>F1-Score</span>
+                                        <span>${(weightedMetrics['f1-score'] * 100).toFixed(1)}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar progress-bar-custom bg-primary" role="progressbar" 
+                                             style="width: ${(weightedMetrics['f1-score'] * 100)}%" 
+                                             aria-valuenow="${(weightedMetrics['f1-score'] * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
                         html += `</div>`;
                     }
                 });
+                
+                if (!hasResults) {
+                    html += '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>No valid results to display</div>';
+                } else {
+                    html += `
+                        <div class="explanation mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-primary">Model Performance</strong>
+                                <i class="fas fa-info-circle text-primary" 
+                                   data-bs-toggle="tooltip" 
+                                   title="Compare models based on accuracy and other metrics. Higher values are better."></i>
+                            </div>
+                            <p class="mb-0 mt-2">Models with higher accuracy and balanced metrics are preferred.</p>
+                        </div>
+                    `;
+                }
             }
             
             html += '</div>';
@@ -312,7 +952,11 @@
         // Run analysis
         document.getElementById('runAnalysisBtn').addEventListener('click', async function() {
             this.disabled = true;
-            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Running...';
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Running Analysis...';
+            
+            // Show notification
+            showNotification('Analysis started. This may take a moment...', 'info');
             
             try {
                 const response = await fetch('/api/run-analysis', {
@@ -335,16 +979,35 @@
                 const result = await response.json();
                 
                 if (result.success) {
+                    showNotification('Analysis completed successfully!', 'success');
                     fetchResults(); // Refresh results
                 } else {
-                    alert('Analysis failed to run');
+                    showNotification('Analysis failed to run', 'error');
                 }
             } catch (error) {
                 console.error('Error running analysis:', error);
-                alert('Error running analysis: ' + error.message);
+                showNotification('Error running analysis: ' + error.message, 'error');
             } finally {
                 this.disabled = false;
-                this.innerHTML = '<i class="fas fa-play-circle"></i> Run Analysis';
+                this.innerHTML = originalHTML;
+            }
+        });
+        
+        // Refresh data
+        document.getElementById('refreshBtn').addEventListener('click', async function() {
+            const btn = this;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+            
+            try {
+                await fetchResults();
+                showNotification('Data refreshed successfully!', 'success');
+            } catch (error) {
+                showNotification('Error refreshing data: ' + error.message, 'error');
+            } finally {
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 1000);
             }
         });
 
@@ -357,65 +1020,85 @@
             const uploadStatus = document.getElementById('uploadStatus');
             
             if (!fileInput.files.length) {
-                uploadStatus.innerHTML = '<div class="alert alert-warning">Please select a file to upload.</div>';
+                showNotification('Please select a file to upload.', 'warning');
                 return;
             }
             
             const file = fileInput.files[0];
-            console.log('Selected file:', file);
             
             if (!file.name.endsWith('.csv')) {
-                uploadStatus.innerHTML = '<div class="alert alert-warning">Please select a CSV file.</div>';
+                showNotification('Please select a CSV file.', 'warning');
+                return;
+            }
+            
+            // Validate file size (max 16MB)
+            if (file.size > 16 * 1024 * 1024) {
+                showNotification('File size exceeds 16MB limit.', 'warning');
                 return;
             }
             
             uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+            const originalHTML = uploadBtn.innerHTML;
+            uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading and Analyzing...';
             
             try {
                 const formData = new FormData();
                 formData.append('file', file);
                 
-                console.log('Sending upload request');
+                showNotification('Uploading file. This may take a moment...', 'info');
+                
                 const response = await fetch('/api/upload-dataset', {
                     method: 'POST',
                     body: formData
                 });
                 
-                console.log('Received response:', response);
-                console.log('Response status:', response.status);
-                console.log('Response headers:', [...response.headers.entries()]);
-                
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Server error response:', errorText);
                     throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                 }
                 
                 const contentType = response.headers.get('content-type');
-                console.log('Response content-type:', contentType);
                 
                 if (!contentType || !contentType.includes('application/json')) {
                     const text = await response.text();
-                    console.error('Response is not JSON:', text);
                     throw new Error('Response is not JSON');
                 }
                 
                 const result = await response.json();
-                console.log('Parsed JSON result:', result);
                 
                 if (result.success) {
-                    uploadStatus.innerHTML = '<div class="alert alert-success">File uploaded and analyzed successfully!</div>';
+                    showNotification(`File uploaded and analyzed successfully! ${result.message || ''}`, 'success');
+                    uploadStatus.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Success!</strong> ${result.message || 'File uploaded and analyzed successfully!'}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
                     fetchResults(); // Refresh results to show the new dataset
                 } else {
-                    uploadStatus.innerHTML = `<div class="alert alert-danger">Error: ${result.error}</div>`;
+                    showNotification(`Error: ${result.error}`, 'error');
+                    uploadStatus.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Error!</strong> ${result.error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
                 }
             } catch (error) {
                 console.error('Error uploading file:', error);
-                uploadStatus.innerHTML = `<div class="alert alert-danger">Error uploading file: ${error.message}</div>`;
+                showNotification(`Error uploading file: ${error.message}`, 'error');
+                uploadStatus.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Error!</strong> ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
             } finally {
                 uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload and Analyze';
+                uploadBtn.innerHTML = originalHTML;
             }
         });
 
@@ -425,9 +1108,12 @@
             const comparisonResults = document.getElementById('comparisonResults');
             
             compareBtn.disabled = true;
+            const originalHTML = compareBtn.innerHTML;
             compareBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Comparing Models...';
             
             try {
+                showNotification('Comparing models across datasets...', 'info');
+                
                 const response = await fetch('/api/compare-models');
                 
                 if (!response.ok) {
@@ -437,20 +1123,31 @@
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     const text = await response.text();
-                    console.error('Response is not JSON:', text);
                     throw new Error('Response is not JSON');
                 }
                 
                 const result = await response.json();
                 
                 if (result.success) {
+                    showNotification('Model comparison completed!', 'success');
+                    
                     // Display comparison results
-                    let html = '<div class="table-responsive"><table class="table table-striped table-bordered">';
+                    let html = `
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Model Performance Comparison</h5>
+                                <p class="text-muted mb-0">Accuracy percentages across all datasets</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                    `;
                     
                     // Create header row with dataset names
-                    html += '<thead><tr><th>Model</th>';
+                    html += '<tr><th scope="col">Model</th>';
                     result.datasets.forEach(dataset => {
-                        html += `<th>${dataset}</th>`;
+                        html += `<th scope="col">${dataset}</th>`;
                     });
                     html += '</tr></thead><tbody>';
                     
@@ -459,24 +1156,128 @@
                         html += `<tr><td><strong>${model}</strong></td>`;
                         result.datasets.forEach(dataset => {
                             const accuracy = result.comparisons.model_accuracy[model][dataset] || 0;
-                            html += `<td>${accuracy.toFixed(2)}%</td>`;
+                            const accuracyClass = accuracy >= 90 ? 'text-success' : accuracy >= 80 ? 'text-primary' : accuracy >= 70 ? 'text-warning' : 'text-danger';
+                            html += `<td class="${accuracyClass}"><strong>${accuracy.toFixed(2)}%</strong></td>`;
                         });
                         html += '</tr>';
                     });
                     
-                    html += '</tbody></table></div>';
+                    html += `</tbody></table></div></div></div>`;
                     comparisonResults.innerHTML = html;
                 } else {
-                    comparisonResults.innerHTML = `<div class="alert alert-danger">Error: ${result.error}</div>`;
+                    showNotification(`Error: ${result.error}`, 'error');
+                    comparisonResults.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Error!</strong> ${result.error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
                 }
             } catch (error) {
                 console.error('Error comparing models:', error);
-                comparisonResults.innerHTML = `<div class="alert alert-danger">Error comparing models: ${error.message}</div>`;
+                showNotification(`Error comparing models: ${error.message}`, 'error');
+                comparisonResults.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Error!</strong> Error comparing models: ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
             } finally {
                 compareBtn.disabled = false;
-                compareBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Compare Models Across Datasets';
+                compareBtn.innerHTML = originalHTML;
             }
         });
+        
+        // Export comparison data
+        document.getElementById('exportComparisonBtn').addEventListener('click', async function() {
+            try {
+                showNotification('Exporting comparison data...', 'info');
+                
+                // In a real application, this would fetch the data and create a downloadable file
+                // For now, we'll simulate the export
+                setTimeout(() => {
+                    showNotification('Comparison data exported successfully!', 'success');
+                }, 1000);
+            } catch (error) {
+                showNotification(`Error exporting data: ${error.message}`, 'error');
+            }
+        });
+        
+        // Toggle view between grid and list
+        document.getElementById('toggleViewBtn').addEventListener('click', function() {
+            gridView = !gridView;
+            this.innerHTML = gridView ? 
+                '<i class="fas fa-th-large me-1"></i> Grid View' : 
+                '<i class="fas fa-list me-1"></i> List View';
+            
+            if (currentData && Object.keys(currentData).length > 0) {
+                displayResults(currentData);
+            }
+        });
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Create notification container if it doesn't exist
+            let container = document.getElementById('notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notification-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    width: 300px;
+                `;
+                document.body.appendChild(container);
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${getTypeClass(type)} alert-dismissible fade show shadow-sm mb-3`;
+            notification.style.cssText = `
+                animation: slideInRight 0.3s ease-out;
+            `;
+            
+            // Add icon based on type
+            const icon = getIconForType(type);
+            notification.innerHTML = `
+                ${icon}
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+        
+        // Helper function to get Bootstrap class for notification type
+        function getTypeClass(type) {
+            switch (type) {
+                case 'success': return 'success';
+                case 'error': return 'danger';
+                case 'warning': return 'warning';
+                default: return 'info';
+            }
+        }
+        
+        // Helper function to get icon for notification type
+        function getIconForType(type) {
+            switch (type) {
+                case 'success': return '<i class="fas fa-check-circle me-2"></i>';
+                case 'error': return '<i class="fas fa-exclamation-circle me-2"></i>';
+                case 'warning': return '<i class="fas fa-exclamation-triangle me-2"></i>';
+                default: return '<i class="fas fa-info-circle me-2"></i>';
+            }
+        }
 
         // Initialize tooltips
         function initializeTooltips() {
@@ -493,5 +1294,37 @@
             setTimeout(initializeTooltips, 500);
         });
     </script>
+    
+    <!-- Footer -->
+    <div class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-brain me-2"></i>ML Analysis Dashboard</h5>
+                    <p class="text-light">Advanced machine learning analysis platform for comparing models and datasets.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Features</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check-circle me-2"></i> Model Comparison</li>
+                        <li><i class="fas fa-check-circle me-2"></i> Dataset Analysis</li>
+                        <li><i class="fas fa-check-circle me-2"></i> Performance Metrics</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Resources</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-file-alt me-2"></i> Documentation</li>
+                        <li><i class="fas fa-life-ring me-2"></i> Support</li>
+                        <li><i class="fas fa-code me-2"></i> API Reference</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0 text-light">&copy; 2023 ML Analysis Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

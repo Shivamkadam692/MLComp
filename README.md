@@ -11,6 +11,7 @@ A web-based application for comparative machine learning analysis with file uplo
 - [API Endpoints](#api-endpoints)
 - [File Upload](#file-upload)
 - [Model Comparison](#model-comparison)
+- [Enhancements](#enhancements)
 - [License](#license)
 
 ## Features
@@ -22,6 +23,8 @@ A web-based application for comparative machine learning analysis with file uplo
 - **Educational Interface**: Built-in explanations of ML metrics for non-experts
 - **Web Interface**: User-friendly dashboard with visualization
 - **Real-time Results**: Instant analysis and comparison results
+- **Automatic Problem Type Detection**: Automatically distinguishes between classification and regression tasks
+- **Enhanced Frontend**: Modern UI with improved visualizations and user experience
 
 ## Technologies Used
 
@@ -55,7 +58,7 @@ flask==3.1.0
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd cp
+   cd MLComp
    ```
 
 2. **Install required packages**
@@ -74,15 +77,17 @@ flask==3.1.0
 ## Usage
 
 1. **Predefined Analysis**: The application automatically runs analysis on predefined datasets when started
-2. **Upload Dataset**: Use the "Upload Your Dataset" section to analyze your own CSV files (now supports mixed data types)
+2. **Upload Dataset**: Use the "Upload Your Dataset" section to analyze your own CSV files (now supports both classification and regression tasks)
 3. **Model Comparison**: Click "Compare Models Across Datasets" to see detailed cross-dataset performance comparisons
 4. **Detailed Views**: Click "View Details" on any dataset card for comprehensive results
 5. **Learn Metrics**: Hover over ⓘ icons to understand ML metrics without leaving the page
+6. **Switch Views**: Toggle between grid and list views for results
+7. **Refresh Data**: Update results without reloading the page
 
 ## Project Structure
 
 ```
-cp/
+MLComp/
 ├── app.py                 # Main Flask application
 ├── main.py               # Command-line interface
 ├── master.py             # Linear regression example
@@ -126,20 +131,23 @@ cp/
 ### Requirements
 - Must contain at least 2 columns
 - Last column is treated as the target variable
-- Target column must have at least 2 unique classes
+- For classification: Target column must have at least 2 unique classes
 
 ### Enhanced Capabilities
 - Automatically handles mixed data types (text and numeric)
 - Processes missing values intelligently
 - Encodes categorical variables for machine learning
 - Supports both binary and multi-class classification targets
+- **NEW**: Automatically detects and handles regression tasks with continuous target variables
+- **NEW**: Applies appropriate algorithms based on target variable type
 
 ### Process
 1. Select a CSV file using the upload form
 2. System validates the file format and content
 3. Dataset is automatically preprocessed to handle data type conversions
-4. Dataset is analyzed using supervised learning models
-5. Results are displayed in the dashboard
+4. System detects if the problem is classification or regression using sklearn's `type_of_target`
+5. Dataset is analyzed using appropriate supervised learning models
+6. Results are displayed in the dashboard with relevant metrics
 
 ### Example CSV Format
 ```csv
@@ -147,6 +155,14 @@ feature1,feature2,feature3,target
 1.0,2.0,3.0,classA
 2.0,3.0,4.0,classB
 3.0,4.0,5.0,classA
+```
+
+### Regression Example
+```csv
+feature1,feature2,price
+1.0,2.0,150000
+2.0,3.0,200000
+3.0,4.0,250000
 ```
 
 ## ML Metric Explanations
@@ -160,6 +176,11 @@ To help non-machine learning experts understand the results, the interface inclu
 - **F1-Score**: Harmonic mean of precision and recall, providing a balance between the two
 - **Support**: Number of actual occurrences of the class in the dataset
 
+### Regression Metrics
+- **R² Score**: Proportion of variance in the target variable explained by the model (ranges from 0 to 1, higher is better)
+- **RMSE**: Root Mean Square Error - standard deviation of prediction errors (lower is better)
+- **MSE**: Mean Square Error - average squared differences between predicted and actual values (lower is better)
+
 ### Clustering Metrics
 - **Silhouette Score**: Measures how similar an object is to its own cluster compared to other clusters (ranges from -1 to 1)
 
@@ -167,25 +188,37 @@ To help non-machine learning experts understand the results, the interface inclu
 - Hover over any ⓘ icon next to a metric to see a brief explanation
 - All detailed results pages include comprehensive explanations of metrics
 - Summary cards provide context for key values
+- Visual progress bars indicate performance levels
 
 ## Model Comparison
 
 ### Available Models
 
-#### Decision Tree Classifier
-- **Purpose**: Creates a tree-like model of decisions based on feature values
-- **Strengths**: Easy to interpret, handles both numerical and categorical data, requires little data preprocessing
-- **Best For**: Problems where interpretability is important and datasets have mixed data types
+#### For Classification Tasks
+- **Decision Tree Classifier**: Creates a tree-like model of decisions based on feature values
+  - **Strengths**: Easy to interpret, handles both numerical and categorical data, requires little data preprocessing
+  - **Best For**: Problems where interpretability is important and datasets have mixed data types
 
-#### Logistic Regression
-- **Purpose**: Predicts the probability of a binary outcome using a logistic function
-- **Strengths**: Provides probability scores, less prone to overfitting, computationally efficient
-- **Best For**: Linearly separable problems and when probability estimates are needed
+- **Logistic Regression**: Predicts the probability of a binary outcome using a logistic function
+  - **Strengths**: Provides probability scores, less prone to overfitting, computationally efficient
+  - **Best For**: Linearly separable problems and when probability estimates are needed
 
-#### Support Vector Machine (SVM)
-- **Purpose**: Finds the optimal hyperplane that separates different classes with maximum margin
-- **Strengths**: Effective in high-dimensional spaces, memory efficient, versatile with different kernel functions
-- **Best For**: Complex classification problems with clear margins of separation
+- **Support Vector Machine (SVM)**: Finds the optimal hyperplane that separates different classes with maximum margin
+  - **Strengths**: Effective in high-dimensional spaces, memory efficient, versatile with different kernel functions
+  - **Best For**: Complex classification problems with clear margins of separation
+
+#### For Regression Tasks
+- **Decision Tree Regressor**: Creates a tree-like model to predict continuous values
+  - **Strengths**: Easy to interpret, handles non-linear relationships, requires little data preprocessing
+  - **Best For**: Problems where interpretability is important and relationships may be non-linear
+
+- **Linear Regression**: Models the relationship between features and a continuous target variable
+  - **Strengths**: Simple to implement, computationally efficient, provides coefficient interpretation
+  - **Best For**: Linear relationships between features and target variable
+
+- **Support Vector Regression (SVR)**: Uses support vector machines for regression tasks
+  - **Strengths**: Effective for non-linear relationships, robust to outliers
+  - **Best For**: Complex regression problems with non-linear patterns
 
 #### K-Means Clustering (Unsupervised)
 - **Purpose**: Groups data points into clusters based on similarity
@@ -220,16 +253,35 @@ Comparing different models across multiple datasets serves several important pur
 5. **Educational Value**: Demonstrate strengths and weaknesses of different approaches
 
 ### Comparison Metrics
-- **Accuracy**: Overall correctness of predictions (higher is better)
-- **Precision**: Proportion of positive identifications that were actually correct
-- **Recall**: Proportion of actual positives that were correctly identified
-- **F1-Score**: Harmonic mean of precision and recall (balances both metrics)
-- **Silhouette Score**: For clustering, measures how similar objects are to their own cluster vs. other clusters
+- **Classification**: Accuracy, Precision, Recall, F1-Score
+- **Regression**: R² Score, RMSE, MSE
+- **Clustering**: Silhouette Score
 
 ### Visualization
 - Tabular comparison across all datasets
 - Performance metrics for each model
 - Interactive dashboard for detailed analysis
+
+## Enhancements
+
+### Frontend Improvements
+- **Modern UI Design**: Enhanced visual design with gradients, animations, and improved layouts
+- **Statistics Overview**: Dashboard showing dataset count, model count, analysis count, and average accuracy
+- **Responsive Design**: Optimized for different screen sizes and devices
+- **Enhanced Visualizations**: Progress bars, improved charts, and better data representation
+- **User Experience**: Better notifications, loading indicators, and interactive elements
+
+### Backend Improvements
+- **Automatic Problem Type Detection**: Uses sklearn's `type_of_target` to distinguish between classification and regression
+- **Adaptive Model Selection**: Automatically applies appropriate algorithms based on problem type
+- **Enhanced Error Handling**: Better error messages and graceful handling of edge cases
+- **Improved Preprocessing**: More robust handling of mixed data types and missing values
+
+### New Features
+- **View Toggle**: Switch between grid and list views for results
+- **Refresh Button**: Update data without reloading the page
+- **Export Functionality**: Export comparison data and results
+- **Enhanced Notifications**: Better user feedback with toast notifications
 
 ## License
 
@@ -237,7 +289,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Version Information
 
-- **Application Version**: 1.3.0
+- **Application Version**: 1.4.0
 - **Python**: 3.13.2
 - **Flask**: 3.1.0
 - **scikit-learn**: 1.7.2
