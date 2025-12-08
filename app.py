@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
+from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import sys
 import os
@@ -6,9 +6,15 @@ import json
 import numpy as np
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from src import preprocess, supervised, unsupervised
-import src.preprocess as preprocess_module
+# Import from new modular structure
+from utils.data_utils import load_iris, load_titanic, load_imdb, preprocess_uploaded_dataset
+from models.classification import train_decision_tree_classifier, train_logistic_regression, train_svm_classifier
+from models.regression import train_decision_tree_regressor, train_linear_regression, train_svr
+from models.clustering import train_kmeans_clustering
+from models.sentiment import train_sentiment_analysis
+from utils.model_utils import detect_problem_type, prepare_data_for_training
 import pandas as pd
+
 
 class NumpyEncoder(json.JSONEncoder):
     """Special json encoder for numpy types"""
@@ -25,6 +31,7 @@ class NumpyEncoder(json.JSONEncoder):
             return obj.to_dict()
         return json.JSONEncoder.default(self, obj)
 
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 app.secret_key = 'your_secret_key_here'  # Change this to a random secret key
@@ -35,6 +42,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 results_storage = {}
 uploaded_datasets = {}
 
+
 def run_analysis():
     """Run all machine learning analyses and store results"""
     global results_storage
@@ -44,11 +52,20 @@ def run_analysis():
         
         # Structured Dataset 1: Iris
         print("[+] Loading Iris Dataset...")
-        iris_df = preprocess.load_iris()
+        iris_df = load_iris()
         # Check what the actual target column is called
         print("Iris columns:", iris_df.columns.tolist())
         target_col = 'target'  # Based on our data/iris.csv file
-        iris_results = supervised.train_supervised_models(iris_df, target_col)
+        
+        # Prepare data
+        X_train, X_test, y_train, y_test = prepare_data_for_training(iris_df, target_col)
+        
+        # Train models
+        iris_results = {}
+        iris_results["Decision Tree"] = train_decision_tree_classifier(X_train, X_test, y_train, y_test)
+        iris_results["Logistic Regression"] = train_logistic_regression(X_train, X_test, y_train, y_test)
+        iris_results["SVM"] = train_svm_classifier(X_train, X_test, y_train, y_test)
+        
         results_storage['iris'] = {
             'name': 'Iris Classification',
             'results': iris_results,
@@ -59,8 +76,18 @@ def run_analysis():
 
         # Structured Dataset 2: Titanic
         print("[+] Loading Titanic Dataset...")
-        titanic_df = preprocess.load_titanic()
-        titanic_results = supervised.train_supervised_models(titanic_df, 'Survived')
+        titanic_df = load_titanic()
+        target_col = 'Survived'
+        
+        # Prepare data
+        X_train, X_test, y_train, y_test = prepare_data_for_training(titanic_df, target_col)
+        
+        # Train models
+        titanic_results = {}
+        titanic_results["Decision Tree"] = train_decision_tree_classifier(X_train, X_test, y_train, y_test)
+        titanic_results["Logistic Regression"] = train_logistic_regression(X_train, X_test, y_train, y_test)
+        titanic_results["SVM"] = train_svm_classifier(X_train, X_test, y_train, y_test)
+        
         results_storage['titanic'] = {
             'name': 'Titanic Survival Prediction',
             'results': titanic_results,
@@ -71,8 +98,10 @@ def run_analysis():
 
         # Unstructured Dataset: IMDb Sentiment
         print("[+] Loading IMDb Dataset...")
-        imdb_df = preprocess.load_imdb()
-        imdb_results = supervised.train_sentiment_analysis(imdb_df)
+        imdb_df = load_imdb()
+        
+        # Use the new sentiment analysis module
+        imdb_results = train_sentiment_analysis(imdb_df)
         results_storage['imdb'] = {
             'name': 'IMDb Sentiment Analysis',
             'results': imdb_results,
@@ -84,7 +113,7 @@ def run_analysis():
         # Unsupervised Clustering: K-Means on Iris
         print("[+] Running K-Means Clustering...")
         target_col = 'target'  # Based on our data/iris.csv file
-        kmeans_results = unsupervised.kmeans_clustering(iris_df.drop(target_col, axis=1))
+        kmeans_results = train_kmeans_clustering(iris_df.drop(target_col, axis=1))
         results_storage['kmeans'] = {
             'name': 'K-Means Clustering (Iris)',
             'results': kmeans_results,
@@ -100,10 +129,12 @@ def run_analysis():
         print(f"Error running analysis: {str(e)}")
         return False
 
+
 @app.route('/')
 def index():
     """Main dashboard page"""
     return render_template('index.html')
+
 
 @app.route('/api/results')
 def get_results():
@@ -111,12 +142,14 @@ def get_results():
     response = json.dumps(results_storage, cls=NumpyEncoder)
     return response, 200, {'Content-Type': 'application/json'}
 
+
 @app.route('/api/run-analysis', methods=['POST'])
 def run_analysis_endpoint():
     """API endpoint to trigger analysis"""
     success = run_analysis()
     response = json.dumps({'success': success}, cls=NumpyEncoder)
     return response, 200, {'Content-Type': 'application/json'}
+
 
 @app.route('/api/compare-models', methods=['GET'])
 def compare_models():
@@ -130,15 +163,12 @@ def compare_models():
             if 'results' in data and isinstance(data['results'], dict) and not key.startswith('kmeans'):
                 # Check if it's supervised learning results
                 first_result = next(iter(data['results'].values()), None)
-                # For classification results, there will be an accuracy key
-                # For regression results, there will be mse, rmse, or r2 keys
-                if first_result:
-                    # Check for any of the common supervised learning metrics
-                    has_classification_metrics = 'accuracy' in first_result
-                    has_regression_metrics = 'mse' in first_result or 'rmse' in first_result or 'r2' in first_result
-                    
-                    if has_classification_metrics or has_regression_metrics:
-                        supervised_datasets[key] = data
+                # Check for any of the common supervised learning metrics
+                has_classification_metrics = 'accuracy' in first_result
+                has_regression_metrics = 'mse' in first_result or 'rmse' in first_result or 'r2' in first_result
+                
+                if has_classification_metrics or has_regression_metrics:
+                    supervised_datasets[key] = data
         
         # Compare metrics across models
         model_comparison = {}
@@ -190,6 +220,7 @@ def compare_models():
         traceback.print_exc()
         return json.dumps({'error': f'Error comparing models: {str(e)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
 
+
 @app.route('/api/upload-dataset', methods=['POST'])
 def upload_dataset():
     """API endpoint to upload and process a dataset"""
@@ -232,7 +263,7 @@ def upload_dataset():
                             
                 # Preprocess the data to handle non-numeric values
                 print("Preprocessing data")
-                df_processed, label_encoders = preprocess_module.preprocess_uploaded_dataset(df, target_column)
+                df_processed, label_encoders = preprocess_uploaded_dataset(df, target_column)
                 df = df_processed
                 print(f"Data preprocessed. Shape: {df.shape}")
             except Exception as save_error:
@@ -268,10 +299,25 @@ def upload_dataset():
                 print("Not enough unique classes for classification")
                 return json.dumps({'error': 'Target column must have at least 2 unique classes for classification'}, cls=NumpyEncoder), 400, {'Content-Type': 'application/json'}
             
-            # Run supervised learning models
+            # Detect problem type
+            problem_type = detect_problem_type(df[target_column])
+            
+            # Prepare data for training
+            X_train, X_test, y_train, y_test = prepare_data_for_training(df, target_column)
+            
+            # Run appropriate models based on problem type
             print("Training supervised models")
             try:
-                results = supervised.train_supervised_models(df, target_column)
+                if problem_type == 'classification':
+                    results = {}
+                    results["Decision Tree"] = train_decision_tree_classifier(X_train, X_test, y_train, y_test)
+                    results["Logistic Regression"] = train_logistic_regression(X_train, X_test, y_train, y_test)
+                    results["SVM"] = train_svm_classifier(X_train, X_test, y_train, y_test)
+                else:  # regression
+                    results = {}
+                    results["Decision Tree"] = train_decision_tree_regressor(X_train, X_test, y_train, y_test)
+                    results["Linear Regression"] = train_linear_regression(X_train, X_test, y_train, y_test)
+                    results["SVR"] = train_svr(X_train, X_test, y_train, y_test)
                 print("Models trained successfully")
             except Exception as model_error:
                 print(f"Error training models: {str(model_error)}")
@@ -306,12 +352,14 @@ def upload_dataset():
         traceback.print_exc()
         return json.dumps({'error': f'Internal server error: {str(e)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
 
+
 @app.route('/results/<analysis_type>')
 def show_results(analysis_type):
     """Show detailed results for a specific analysis"""
     if analysis_type not in results_storage:
         return "Analysis not found", 404
     return render_template('results.html', analysis_type=analysis_type, data=results_storage[analysis_type])
+
 
 if __name__ == '__main__':
     # Create templates directory if it doesn't exist

@@ -25,6 +25,7 @@ A web-based application for comparative machine learning analysis with file uplo
 - **Real-time Results**: Instant analysis and comparison results
 - **Automatic Problem Type Detection**: Automatically distinguishes between classification and regression tasks
 - **Enhanced Frontend**: Modern UI with improved visualizations and user experience
+- **Modular Code Organization**: Well-structured codebase with separate modules for different functionalities
 
 ## Technologies Used
 
@@ -86,6 +87,8 @@ flask==3.1.0
 
 ## Project Structure
 
+For detailed information about the project structure, see [Project Structure Documentation](docs/project_structure.md).
+
 ```
 MLComp/
 ├── app.py                 # Main Flask application
@@ -93,22 +96,33 @@ MLComp/
 ├── master.py             # Linear regression example
 ├── requirements.txt      # Python dependencies
 ├── README.md             # This file
+├── cars.csv              # Sample dataset
+├── sample_regression_dataset.csv  # Sample regression dataset
 ├── Dataset/              # Predefined datasets
 │   ├── iris.csv
 │   ├── titanic.csv
 │   └── mtcars.csv
 ├── data/                 # Additional datasets
 │   ├── iris.csv
-│   ├── titanic.csv
-│   └── imdb_reviews.csv
-├── src/                  # Source code
-│   ├── preprocess.py     # Data preprocessing functions
-│   ├── supervised.py     # Supervised learning models
-│   └── unsupervised.py   # Unsupervised learning models
+│   └── titanic.csv
+├── docs/                 # Documentation files
+│   └── project_structure.md
+├── models/               # Machine learning model implementations
+│   ├── classification.py
+│   ├── regression.py
+│   ├── clustering.py
+│   └── sentiment.py
+├── src/                  # Legacy source code (will be deprecated)
+│   ├── preprocess.py
+│   ├── supervised.py
+│   └── unsupervised.py
 ├── templates/            # HTML templates
-│   ├── index.html        # Main dashboard
-│   └── results.html      # Detailed results view
-└── uploads/              # Uploaded datasets (created automatically)
+│   ├── index.html
+│   └── results.html
+├── uploads/              # Uploaded datasets (auto-created)
+└── utils/                # Utility functions
+    ├── data_utils.py
+    └── model_utils.py
 ```
 
 ## API Endpoints
@@ -276,6 +290,7 @@ Comparing different models across multiple datasets serves several important pur
 - **Adaptive Model Selection**: Automatically applies appropriate algorithms based on problem type
 - **Enhanced Error Handling**: Better error messages and graceful handling of edge cases
 - **Improved Preprocessing**: More robust handling of mixed data types and missing values
+- **Modular Architecture**: Better organized code with separate modules for different functionalities
 
 ### New Features
 - **View Toggle**: Switch between grid and list views for results
@@ -289,7 +304,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Version Information
 
-- **Application Version**: 1.4.0
+- **Application Version**: 1.6.0
 - **Python**: 3.13.2
 - **Flask**: 3.1.0
 - **scikit-learn**: 1.7.2
