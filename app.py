@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # Import from new modular structure
 from utils.data_utils import load_iris, load_titanic, load_imdb, preprocess_uploaded_dataset
 from models.classification import train_decision_tree_classifier, train_logistic_regression, train_svm_classifier
-from models.regression import train_decision_tree_regressor, train_linear_regression, train_svr
+from models.regression import train_decision_tree_regressor
 from models.clustering import train_kmeans_clustering
 from models.sentiment import train_sentiment_analysis
 from utils.model_utils import detect_problem_type, prepare_data_for_training
@@ -316,8 +316,6 @@ def upload_dataset():
                 else:  # regression
                     results = {}
                     results["Decision Tree"] = train_decision_tree_regressor(X_train, X_test, y_train, y_test)
-                    results["Linear Regression"] = train_linear_regression(X_train, X_test, y_train, y_test)
-                    results["SVR"] = train_svr(X_train, X_test, y_train, y_test)
                 print("Models trained successfully")
             except Exception as model_error:
                 print(f"Error training models: {str(model_error)}")
@@ -351,6 +349,32 @@ def upload_dataset():
         import traceback
         traceback.print_exc()
         return json.dumps({'error': f'Internal server error: {str(e)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
+
+
+@app.route('/api/delete-dataset/<dataset_name>', methods=['DELETE'])
+def delete_dataset(dataset_name):
+    """API endpoint to delete an uploaded dataset"""
+    try:
+        # Check if dataset exists
+        if dataset_name not in uploaded_datasets:
+            return json.dumps({'error': 'Dataset not found'}, cls=NumpyEncoder), 404, {'Content-Type': 'application/json'}
+        
+        # Remove dataset from storage
+        uploaded_datasets.pop(dataset_name, None)
+        
+        # Remove dataset results from storage
+        dataset_key = f'upload_{dataset_name}'
+        results_storage.pop(dataset_key, None)
+        
+        # Delete the file from uploads directory
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{dataset_name}.csv")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        
+        return json.dumps({'success': True, 'message': f'Dataset {dataset_name} deleted successfully'}, cls=NumpyEncoder), 200, {'Content-Type': 'application/json'}
+    except Exception as e:
+        print(f"Error deleting dataset: {str(e)}")
+        return json.dumps({'error': f'Error deleting dataset: {str(e)}'}, cls=NumpyEncoder), 500, {'Content-Type': 'application/json'}
 
 
 @app.route('/results/<analysis_type>')

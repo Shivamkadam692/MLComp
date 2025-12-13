@@ -6,8 +6,6 @@ used in the ML Analysis Dashboard.
 """
 
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 

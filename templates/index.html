@@ -5,231 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML Analysis Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            --secondary-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            --accent-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --success-color: #4ade80;
+            --warning-color: #facc15;
+            --danger-color: #f87171;
         }
         
         body {
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
         }
         
-        .header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 40px 0;
-            margin-bottom: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
         }
         
-        .header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
-        }
-        
-        .card {
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
             margin-bottom: 25px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border: none;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
         }
         
         .metric-card {
-            text-align: center;
-            padding: 25px 15px;
-            border-radius: 10px;
             background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             height: 100%;
         }
         
-        .metric-card .icon-wrapper {
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 15px 0;
+        }
+        
+        .icon-wrapper {
             width: 70px;
             height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
             font-size: 1.8rem;
-            background: var(--primary-gradient);
             color: white;
-        }
-        
-        .metric-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #2575fc;
-            margin: 10px 0;
-        }
-        
-        .btn-custom {
-            background: var(--primary-gradient);
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
-        }
-        
-        .btn-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(37, 117, 252, 0.4);
-        }
-        
-        .btn-custom:active {
-            transform: translateY(0);
-        }
-        
-        .btn-secondary-custom {
-            background: var(--secondary-gradient);
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
-            color: #333;
-        }
-        
-        .btn-secondary-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(255, 154, 158, 0.4);
-        }
-        
-        .explanation {
-            background-color: #e9f7fe;
-            border-left: 4px solid #2575fc;
-            padding: 12px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.9em;
-        }
-        
-        .section-title {
-            position: relative;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--primary-gradient);
-            border-radius: 2px;
-        }
-        
-        .dataset-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .progress-bar-custom {
-            height: 10px;
-            border-radius: 5px;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ff4757;
-            color: white;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-        
-        .feature-card {
-            text-align: center;
-            padding: 25px 15px;
-            border-radius: 12px;
-            height: 100%;
-            background: white;
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             text-align: center;
-            transition: all 0.3s ease;
+            padding: 25px 15px;
+            transition: transform 0.3s ease;
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
         }
         
         .stat-number {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary-color);
+            margin: 10px 0;
         }
         
-        .pulse-animation {
-            animation: pulse 2s infinite;
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 25px;
+            height: 100%;
+            transition: transform 0.3s ease;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .term-highlight {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .explanation {
+            background: rgba(67, 97, 238, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 25px 0;
+        }
+        
+        .explanation h6 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .progress-bar-custom {
+            border-radius: 10px;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+        
+        .btn-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            color: white;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
         }
         
         .fade-in {
@@ -241,53 +181,70 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-            border-radius: 15px 15px 0 0;
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .stat-number {
+                font-size: 1.8rem;
             }
-            to {
-                transform: translateX(0);
-                opacity: 1;
+            
+            .metric-value {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header text-center">
-            <h1 class="display-4 fw-bold"><i class="fas fa-brain me-3"></i>Machine Learning Analysis Dashboard</h1>
-            <p class="lead fs-5">Compare results across multiple datasets and algorithms with advanced analytics</p>
-            <div class="mt-4">
-                <button id="runAnalysisBtn" class="btn btn-light btn-custom pulse-animation me-2">
-                    <i class="fas fa-play-circle me-2"></i> Run Analysis
-                </button>
-                <button id="refreshBtn" class="btn btn-outline-light ms-2">
-                    <i class="fas fa-sync-alt me-2"></i> Refresh Data
-                </button>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-brain me-2"></i>ML Analysis Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#upload-section"><i class="fas fa-upload me-1"></i> Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#results-section"><i class="fas fa-chart-line me-1"></i> Results</a>
+                    </li>
+                </ul>
             </div>
         </div>
-        
-        <!-- Stats Overview -->
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container my-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Machine Learning Analysis Dashboard</h1>
+                <p class="lead mb-4">Analyze datasets, compare models, and visualize performance metrics with our intuitive platform.</p>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-start">
+                    <button id="runAnalysisBtn" class="btn btn-custom btn-lg px-4 me-sm-3">
+                        <i class="fas fa-play me-2"></i>Run Analysis
+                    </button>
+                    <a href="#upload-section" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>Upload Dataset
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="text-center">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="ML Visualization" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="container my-5">
         <div class="row mb-5">
             <div class="col-md-3 mb-4">
                 <div class="stat-card">
@@ -320,7 +277,7 @@
         </div>
 
         <!-- File Upload Section -->
-        <div class="row mt-4">
+        <div class="row mb-5" id="upload-section">
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3">
@@ -328,14 +285,13 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6">
-                                <form id="uploadForm" enctype="multipart/form-data">
-                                    <div class="mb-4">
-                                        <label for="csvFile" class="form-label fw-bold">Select CSV File</label>
-                                        <input class="form-control form-control-lg" type="file" id="csvFile" name="file" accept=".csv" required>
-                                        <div class="form-text">Supported formats: CSV files only. Maximum size: 16MB</div>
+                            <div class="col-lg-6 mb-4 mb-lg-0">
+                                <form id="uploadForm">
+                                    <div class="mb-3">
+                                        <label for="csvFile" class="form-label">Select CSV File</label>
+                                        <input class="form-control" type="file" id="csvFile" accept=".csv" required>
                                     </div>
-                                    <button type="submit" class="btn btn-custom" id="uploadBtn">
+                                    <button type="submit" class="btn btn-custom w-100" id="uploadBtn">
                                         <i class="fas fa-cloud-upload-alt me-2"></i> Upload and Analyze
                                     </button>
                                 </form>
@@ -385,16 +341,19 @@
                         <p class="text-muted mb-4">Compare the performance of different machine learning models across all datasets</p>
                         <div class="d-grid gap-2 d-md-block mb-4">
                             <button id="compareModelsBtn" class="btn btn-custom me-md-2 mb-2 mb-md-0">
-                                <i class="fas fa-chart-bar me-2"></i> Compare Models Across Datasets
+                                <i class="fas fa-sync-alt me-1"></i> Refresh Comparison
                             </button>
-                            <button id="exportComparisonBtn" class="btn btn-secondary-custom ms-md-2">
-                                <i class="fas fa-download me-2"></i> Export Comparison
+                            <button id="toggleViewBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-th-large me-1"></i> Grid View
                             </button>
                         </div>
                         <div id="comparisonResults">
+                            <!-- Comparison results will be loaded here -->
                             <div class="text-center py-5">
-                                <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">Click the button above to compare model performances across all datasets.</p>
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading comparison...</span>
+                                </div>
+                                <p class="mt-3">Click "Refresh Comparison" to load model performance data</p>
                             </div>
                         </div>
                     </div>
@@ -402,12 +361,12 @@
             </div>
         </div>
 
-        <!-- Detailed Results Section -->
-        <div class="row mt-5">
+        <!-- Results Section -->
+        <div class="row mt-5" id="results-section">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h3 class="section-title mb-0">Detailed Analysis Results</h3>
+                        <h3 class="section-title mb-0">Analysis Results</h3>
                         <p class="text-muted mb-0">Comprehensive insights from all machine learning analyses</p>
                     </div>
                     <div>
@@ -440,74 +399,50 @@
         // Fetch and display results
         async function fetchResults() {
             try {
-                showLoadingIndicator();
-                
                 const response = await fetch('/api/results');
-                
-                // Check if response is OK
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                // Check content type
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    const text = await response.text();
-                    console.error('Response is not JSON:', text);
-                    throw new Error('Response is not JSON');
-                }
-                
                 const data = await response.json();
                 currentData = data;
                 
-                // Update statistics
-                updateStatistics(data);
+                // Update stats
+                updateStats(data);
                 
                 // Update summary cards
                 updateSummaryCards(data);
                 
-                // Display detailed results
+                // Display results
                 displayResults(data);
+                
+                console.log('Results fetched:', data);
             } catch (error) {
                 console.error('Error fetching results:', error);
-                document.getElementById('resultsContainer').innerHTML = 
-                    '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading results: ' + error.message + '</div>';
-            }
-        }
-
-        // Show loading indicator
-        function showLoadingIndicator() {
-            document.getElementById('resultsContainer').innerHTML = `
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading results...</span>
+                document.getElementById('resultsContainer').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading results: ${error.message}
                     </div>
-                    <p class="mt-3">Loading analysis results...</p>
-                </div>
-            `;
+                `;
+            }
         }
         
         // Update statistics
-        function updateStatistics(data) {
+        function updateStats(data) {
             const datasetCount = Object.keys(data).length;
             let modelCount = 0;
-            let totalAnalyses = 0;
             let totalAccuracy = 0;
             let accuracyCount = 0;
             
-            Object.keys(data).forEach(key => {
-                const analysis = data[key];
-                totalAnalyses++;
-                
-                if (analysis.results) {
-                    // Count models
-                    if (typeof analysis.results === 'object' && !Array.isArray(analysis.results)) {
-                        modelCount += Object.keys(analysis.results).length;
-                        
-                        // Calculate average accuracy
-                        Object.values(analysis.results).forEach(model => {
-                            if (model && typeof model === 'object' && model.accuracy !== undefined) {
-                                totalAccuracy += model.accuracy;
+            Object.values(data).forEach(dataset => {
+                if (dataset.results) {
+                    modelCount += Object.keys(dataset.results).length;
+                    // For classification datasets, accumulate accuracy
+                    if (dataset.results.accuracy !== undefined) {
+                        totalAccuracy += dataset.results.accuracy;
+                        accuracyCount++;
+                    } else {
+                        // For datasets with multiple models, check each model's results
+                        Object.values(dataset.results).forEach(modelResult => {
+                            if (modelResult.accuracy !== undefined) {
+                                totalAccuracy += modelResult.accuracy;
                                 accuracyCount++;
                             }
                         });
@@ -515,13 +450,16 @@
                 }
             });
             
-            const avgAccuracy = accuracyCount > 0 ? (totalAccuracy / accuracyCount * 100).toFixed(1) : 0;
-            
-            // Update DOM elements
             document.getElementById('datasetCount').textContent = datasetCount;
             document.getElementById('modelCount').textContent = modelCount;
-            document.getElementById('analysisCount').textContent = totalAnalyses;
-            document.getElementById('accuracyAvg').textContent = `${avgAccuracy}%`;
+            document.getElementById('analysisCount').textContent = datasetCount;
+            
+            if (accuracyCount > 0) {
+                const avgAccuracy = (totalAccuracy / accuracyCount * 100).toFixed(1);
+                document.getElementById('accuracyAvg').textContent = `${avgAccuracy}%`;
+            } else {
+                document.getElementById('accuracyAvg').textContent = '0%';
+            }
         }
         
         // Update summary cards
@@ -548,7 +486,7 @@
                     col.innerHTML = `
                         <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body metric-card">
-                                <div class="icon-wrapper mb-3" style="background: linear-gradient(135deg, ${summary.color} 0%, #${parseInt(summary.color.slice(1), 16) + 100000} 100%);">
+                                <div class="icon-wrapper mb-3" style="background: linear-gradient(135deg, ${summary.color} 0%, #2575fc 100%);">
                                     <i class="fas fa-${summary.icon}"></i>
                                 </div>
                                 <h5 class="card-title fw-bold">${summary.title}</h5>
@@ -571,6 +509,7 @@
                 if (key.startsWith('upload_')) {
                     hasUploadedDatasets = true;
                     const dataset = data[key];
+                    const datasetName = key.replace('upload_', '');
                     const col = document.createElement('div');
                     col.className = 'col-xl-3 col-md-6 mb-4 fade-in';
                     col.innerHTML = `
@@ -584,9 +523,14 @@
                                     ${dataset.dataset_shape ? dataset.dataset_shape[0] : 'N/A'}
                                 </div>
                                 <p class="text-muted mb-3">samples</p>
-                                <a href="/results/${key}" class="btn btn-outline-primary w-100">
-                                    <i class="fas fa-eye me-1"></i> View Details
-                                </a>
+                                <div class="d-grid gap-2">
+                                    <a href="/results/${key}" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i> View Details
+                                    </a>
+                                    <button class="btn btn-outline-danger delete-dataset-btn" data-dataset="${datasetName}">
+                                        <i class="fas fa-trash me-1"></i> Delete
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -606,8 +550,16 @@
                     </div>
                 `;
             }
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-dataset-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const datasetName = this.getAttribute('data-dataset');
+                    deleteDataset(datasetName);
+                });
+            });
         }
-
+        
         // Display detailed results
         function displayResults(data) {
             let html = '';
@@ -649,6 +601,7 @@
                 Object.keys(data).forEach(key => {
                     if (key.startsWith('upload_')) {
                         const analysis = data[key];
+                        const datasetName = key.replace('upload_', '');
                         html += `
                             <div class="col-xl-4 col-md-6 mb-4 fade-in">
                                 <div class="card h-100 border-0 shadow-sm">
@@ -665,9 +618,14 @@
                                             </span>
                                         </div>
                                         ${renderAnalysisResults(analysis.results)}
-                                        <a href="/results/${key}" class="btn btn-outline-primary w-100 mt-3">
-                                            <i class="fas fa-chart-line me-1"></i> Detailed View
-                                        </a>
+                                        <div class="d-grid gap-2 mt-3">
+                                            <a href="/results/${key}" class="btn btn-outline-primary">
+                                                <i class="fas fa-chart-line me-1"></i> Detailed View
+                                            </a>
+                                            <button class="btn btn-outline-danger delete-dataset-btn" data-dataset="${datasetName}">
+                                                <i class="fas fa-trash me-1"></i> Delete Dataset
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -682,8 +640,9 @@
                 
                 Object.keys(data).forEach(key => {
                     const analysis = data[key];
+                    const displayName = analysis.name;
                     const isUploaded = key.startsWith('upload_');
-                    const displayName = isUploaded ? analysis.name.replace(' Analysis', '') : analysis.name;
+                    const datasetName = isUploaded ? key.replace('upload_', '') : null;
                     
                     html += `
                         <div class="list-group-item list-group-item-action p-4 mb-3 border-0 shadow-sm rounded-3">
@@ -696,9 +655,14 @@
                             <div class="mb-3">
                                 ${renderAnalysisResults(analysis.results)}
                             </div>
-                            <a href="/results/${key}" class="btn btn-outline-primary">
-                                <i class="fas fa-chart-line me-1"></i> Detailed View
-                            </a>
+                            <div class="d-grid gap-2 d-md-block">
+                                <a href="/results/${key}" class="btn btn-outline-primary me-md-2">
+                                    <i class="fas fa-chart-line me-1"></i> Detailed View
+                                </a>
+                                ${isUploaded ? `<button class="btn btn-outline-danger delete-dataset-btn" data-dataset="${datasetName}">
+                                    <i class="fas fa-trash me-1"></i> Delete Dataset
+                                </button>` : ''}
+                            </div>
                         </div>
                     `;
                 });
@@ -710,101 +674,56 @@
             
             // Re-initialize tooltips
             setTimeout(initializeTooltips, 100);
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-dataset-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const datasetName = this.getAttribute('data-dataset');
+                    deleteDataset(datasetName);
+                });
+            });
         }
-
+        
         // Render analysis results
         function renderAnalysisResults(results) {
-            if (!results) return '<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>No results available</div>';
+            if (!results) return '<p class="text-muted">No results available</p>';
             
-            let html = '<div class="mt-3">';
-            
-            // Handle different result types
-            if (results['silhouette_score']) {
-                // K-means clustering results
-                const score = results['silhouette_score'];
-                const scorePercent = ((score + 1) / 2 * 100).toFixed(1); // Convert -1..1 to 0..100%
+            // Check if this is sentiment analysis (IMDb)
+            if (results.accuracy !== undefined) {
+                const accuracy = results.accuracy;
+                const f1Score = results['1'] ? results['1']['f1-score'] : 0;
                 
-                html += `
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <strong>Silhouette Score</strong>
-                            <span>${score.toFixed(3)}</span>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar progress-bar-custom" role="progressbar" 
-                                 style="width: ${scorePercent}%" 
-                                 aria-valuenow="${scorePercent}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="text-muted small mt-1">Clustering quality: ${score >= 0.7 ? 'Excellent' : score >= 0.5 ? 'Good' : score >= 0.25 ? 'Fair' : 'Poor'}</div>
-                    </div>
-                `;
-                
-                html += `
-                    <div class="explanation">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-primary">What is Silhouette Score?</strong>
-                            <i class="fas fa-info-circle text-primary" 
-                               data-bs-toggle="tooltip" 
-                               title="Measures clustering quality from -1 to 1. Higher values indicate better clustering."></i>
-                        </div>
-                        <p class="mb-0 mt-2">Ranges from -1 to 1:</p>
-                        <ul class="mb-0 small">
-                            <li>+1: Well-matched to own cluster</li>
-                            <li>0: On decision boundary</li>
-                            <li>-1: May be assigned to wrong cluster</li>
-                        </ul>
-                    </div>
-                `;
-            } else if (results['accuracy']) {
-                // Sentiment analysis results
-                const accuracy = results['accuracy'];
-                
-                html += `
+                return `
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
                             <strong>Accuracy</strong>
-                            <span>${(accuracy * 100).toFixed(2)}%</span>
+                            <span>${(accuracy * 100).toFixed(1)}%</span>
                         </div>
                         <div class="progress" style="height: 10px;">
                             <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
                                  style="width: ${(accuracy * 100)}%" 
                                  aria-valuenow="${(accuracy * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <div class="text-muted small mt-1">Performance: ${accuracy >= 0.9 ? 'Excellent' : accuracy >= 0.8 ? 'Good' : accuracy >= 0.7 ? 'Fair' : 'Poor'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <strong>F1-Score</strong>
+                            <span>${f1Score.toFixed(3)}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
+                                 style="width: ${(f1Score * 100)}%" 
+                                 aria-valuenow="${(f1Score * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
                     </div>
                 `;
-                
-                if (results['1'] && results['1']['f1-score']) {
-                    const f1Score = results['1']['f1-score'];
-                    html += `
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <strong>F1-Score</strong>
-                                <span>${f1Score.toFixed(3)}</span>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
-                                     style="width: ${(f1Score * 100)}%" 
-                                     aria-valuenow="${(f1Score * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                html += `
-                    <div class="explanation">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-primary">Understanding Metrics</strong>
-                            <i class="fas fa-info-circle text-primary" 
-                               data-bs-toggle="tooltip" 
-                               title="Accuracy: Percentage of correct predictions. F1-Score: Balance of precision and recall."></i>
-                        </div>
-                        <p class="mb-0 mt-2">Higher values indicate better model performance.</p>
-                    </div>
-                `;
-            } else if (results && Object.keys(results).length > 0 && results[Object.keys(results)[0]] && results[Object.keys(results)[0]].hasOwnProperty('mse')) {
-                // Regression results
+            }
+            
+            // Check if this is regression results
+            if (results && Object.keys(results).length > 0 && results[Object.keys(results)[0]] && results[Object.keys(results)[0]].hasOwnProperty('mse')) {
+                let html = '<div class="row">';
                 let hasResults = false;
+                
                 Object.keys(results).forEach(model => {
                     const metrics = results[model];
                     if (metrics && metrics.hasOwnProperty('mse')) {
@@ -814,68 +733,57 @@
                         const r2 = metrics['r2'];
                         
                         html += `
-                            <div class="mb-3 border-bottom pb-3">
-                                <h6 class="fw-bold mb-2">${model}</h6>
-                                <div class="mb-2">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>R² Score</span>
-                                        <span>${r2.toFixed(4)}</span>
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded p-3">
+                                    <h6 class="text-center mb-3">${model}</h6>
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>R² Score</span>
+                                            <span>${r2.toFixed(4)}</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
+                                                 style="width: ${(r2 * 100)}%" 
+                                                 aria-valuenow="${(r2 * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
                                     </div>
-                                    <div class="progress" style="height: 8px;">
-                                        <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
-                                             style="width: ${(Math.max(0, Math.min(1, r2)) * 100)}%" 
-                                             aria-valuenow="${(Math.max(0, Math.min(1, r2)) * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <div class="text-muted small mt-1">Performance: ${r2 >= 0.9 ? 'Excellent' : r2 >= 0.7 ? 'Good' : r2 >= 0.5 ? 'Fair' : 'Poor'}</div>
-                                </div>
-                                <div class="mb-2">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>RMSE</span>
-                                        <span>${rmse.toFixed(4)}</span>
-                                    </div>
-                                    <div class="text-muted small">Root Mean Square Error (lower is better)</div>
-                                </div>
-                                <div>
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>MSE</span>
-                                        <span>${mse.toFixed(4)}</span>
-                                    </div>
-                                    <div class="text-muted small">Mean Square Error (lower is better)</div>
                                 </div>
                             </div>
                         `;
                     }
                 });
                 
-                if (hasResults) {
-                    html += `
-                        <div class="explanation mt-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <strong class="text-primary">Regression Metrics</strong>
-                                <i class="fas fa-info-circle text-primary" 
-                                   data-bs-toggle="tooltip" 
-                                   title="R²: Proportion of variance explained by the model. RMSE: Standard deviation of prediction errors."></i>
-                            </div>
-                            <p class="mb-0 mt-2">Higher R² and lower RMSE/MSE indicate better model performance.</p>
-                        </div>
-                    `;
+                html += '</div>';
+                
+                if (!hasResults) {
+                    html = '<p class="text-muted">No valid regression results to display</p>';
                 }
-            } else {
-                // Classification results
-                let hasResults = false;
-                Object.keys(results).forEach(model => {
-                    const metrics = results[model];
-                    if (metrics && metrics['accuracy']) {
-                        hasResults = true;
-                        const accuracy = metrics['accuracy'];
-                        
-                        html += `
-                            <div class="mb-3 border-bottom pb-3">
-                                <h6 class="fw-bold mb-2">${model}</h6>
+                
+                return html;
+            }
+            
+            // Otherwise, treat as classification results
+            let html = '<div class="row">';
+            let hasResults = false;
+            
+            Object.keys(results).forEach(model => {
+                const metrics = results[model];
+                if (metrics && metrics.hasOwnProperty('accuracy')) {
+                    hasResults = true;
+                    const accuracy = metrics.accuracy;
+                    const weightedMetrics = metrics['weighted avg'] || {};
+                    const precision = weightedMetrics.precision || 0;
+                    const recall = weightedMetrics.recall || 0;
+                    const f1Score = weightedMetrics['f1-score'] || 0;
+                    
+                    html += `
+                        <div class="col-md-6 col-xl-4 mb-3">
+                            <div class="border rounded p-3">
+                                <h6 class="text-center mb-3">${model}</h6>
                                 <div class="mb-2">
                                     <div class="d-flex justify-content-between mb-1">
                                         <span>Accuracy</span>
-                                        <span>${(accuracy * 100).toFixed(2)}%</span>
+                                        <span>${(accuracy * 100).toFixed(1)}%</span>
                                     </div>
                                     <div class="progress" style="height: 8px;">
                                         <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
@@ -883,436 +791,298 @@
                                              aria-valuenow="${(accuracy * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
-                        `;
-                        
-                        if (metrics['weighted avg']) {
-                            const weightedMetrics = metrics['weighted avg'];
-                            html += `
                                 <div class="mb-2">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>Precision</span>
-                                        <span>${(weightedMetrics.precision * 100).toFixed(1)}%</span>
-                                    </div>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar progress-bar-custom bg-warning" role="progressbar" 
-                                             style="width: ${(weightedMetrics.precision * 100)}%" 
-                                             aria-valuenow="${(weightedMetrics.precision * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>Recall</span>
-                                        <span>${(weightedMetrics.recall * 100).toFixed(1)}%</span>
-                                    </div>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
-                                             style="width: ${(weightedMetrics.recall * 100)}%" 
-                                             aria-valuenow="${(weightedMetrics.recall * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                                <div>
                                     <div class="d-flex justify-content-between mb-1">
                                         <span>F1-Score</span>
-                                        <span>${(weightedMetrics['f1-score'] * 100).toFixed(1)}%</span>
+                                        <span>${f1Score.toFixed(3)}</span>
                                     </div>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar progress-bar-custom bg-primary" role="progressbar" 
-                                             style="width: ${(weightedMetrics['f1-score'] * 100)}%" 
-                                             aria-valuenow="${(weightedMetrics['f1-score'] * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
+                                             style="width: ${(f1Score * 100)}%" 
+                                             aria-valuenow="${(f1Score * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
-                            `;
-                        }
-                        
-                        html += `</div>`;
-                    }
-                });
-                
-                if (!hasResults) {
-                    html += '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>No valid results to display</div>';
-                } else {
-                    html += `
-                        <div class="explanation mt-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <strong class="text-primary">Model Performance</strong>
-                                <i class="fas fa-info-circle text-primary" 
-                                   data-bs-toggle="tooltip" 
-                                   title="Compare models based on accuracy and other metrics. Higher values are better."></i>
                             </div>
-                            <p class="mb-0 mt-2">Models with higher accuracy and balanced metrics are preferred.</p>
                         </div>
                     `;
                 }
-            }
+            });
             
             html += '</div>';
+            
+            if (!hasResults) {
+                html = '<p class="text-muted">No valid results to display</p>';
+            } else {
+                html += `
+                    <div class="explanation">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong class="text-primary">Understanding Metrics</strong>
+                            <i class="fas fa-info-circle text-primary" 
+                               data-bs-toggle="tooltip" 
+                               title="Accuracy: Percentage of correct predictions. F1-Score: Balance of precision and recall."></i>
+                        </div>
+                        <p class="mb-0 mt-2">Higher values indicate better model performance.</p>
+                        <h6 class="mt-3 mb-2">Simple Explanations</h6>
+                        <ul class="mb-0">
+                            <li><span class="term-highlight">Accuracy</span>: How often the model is correct overall</li>
+                            <li><span class="term-highlight">Precision</span>: When it predicts "Yes", how often is it right?</li>
+                            <li><span class="term-highlight">Recall</span>: Of all actual "Yes" cases, how many did it catch?</li>
+                            <li><span class="term-highlight">F1-Score</span>: A balance of precision and recall</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
             return html;
         }
-
-        // Run analysis
-        document.getElementById('runAnalysisBtn').addEventListener('click', async function() {
-            this.disabled = true;
-            const originalHTML = this.innerHTML;
-            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Running Analysis...';
-            
-            // Show notification
-            showNotification('Analysis started. This may take a moment...', 'info');
-            
+        
+        // Compare models across datasets
+        async function compareModels() {
             try {
+                const response = await fetch('/api/compare-models');
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to compare models');
+                }
+                
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Model</th>
+                `;
+                
+                // Add dataset columns
+                result.datasets.forEach(dataset => {
+                    html += `<th>${dataset}</th>`;
+                });
+                
+                html += `
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                // Add model rows
+                Object.keys(result.comparisons.model_accuracy).forEach(model => {
+                    html += `<tr><td><strong>${model}</strong></td>`;
+                    
+                    result.datasets.forEach(dataset => {
+                        const accuracy = result.comparisons.model_accuracy[model][dataset] || 0;
+                        
+                        // Determine metric type and formatting based on model name and dataset
+                        let displayValue = `${accuracy.toFixed(2)}%`;
+                        let valueClass = 'text-muted';
+                        
+                        // Determine color based on value (green for high, red for low)
+                        if (accuracy >= 90) {
+                            valueClass = 'text-success';
+                        } else if (accuracy >= 80) {
+                            valueClass = 'text-primary';
+                        } else if (accuracy >= 70) {
+                            valueClass = 'text-warning';
+                        } else if (accuracy > 0) {
+                            valueClass = 'text-danger';
+                        }
+                        
+                        // Special handling for regression models (R² score) - higher is better
+                        // For classification models (accuracy) - higher is better
+                        html += `<td class="${valueClass}"><strong>${displayValue}</strong></td>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="explanation">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Understanding Model Comparison</h6>
+                            <i class="fas fa-info-circle text-primary" 
+                               data-bs-toggle="tooltip" 
+                               title="Comparison of model performance across datasets"></i>
+                        </div>
+                        <p>Higher percentages indicate better model performance on each dataset.</p>
+                        <ul>
+                            <li><span class="term-highlight">Green values (90%+)</span>: Excellent performance</li>
+                            <li><span class="term-highlight">Blue values (80-89%)</span>: Good performance</li>
+                            <li><span class="term-highlight">Yellow values (70-79%)</span>: Fair performance</li>
+                            <li><span class="term-highlight">Red values (below 70%)</span>: Poor performance</li>
+                        </ul>
+                        <h6 class="mt-3 mb-2">Simple Explanations for ML Metrics</h6>
+                        <ul>
+                            <li><span class="term-highlight">Accuracy</span>: The percentage of correct predictions. If accuracy is 85%, the model got 85 out of 100 predictions right.</li>
+                            <li><span class="term-highlight">Precision</span>: When the model predicts something is positive, precision tells you how often it's correct. High precision means fewer false alarms.</li>
+                            <li><span class="term-highlight">Recall</span>: Out of all items that truly belong to a category, recall tells you what percentage the model found. High recall means the model misses fewer items.</li>
+                            <li><span class="term-highlight">F1-Score</span>: A balanced score that considers both precision and recall. It's especially useful when you care about both finding most items AND being accurate about what you find.</li>
+                        </ul>
+                    </div>
+                `;
+                
+                document.getElementById('comparisonResults').innerHTML = html;
+                
+                // Re-initialize tooltips
+                setTimeout(initializeTooltips, 100);
+            } catch (error) {
+                console.error('Error comparing models:', error);
+                document.getElementById('comparisonResults').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error comparing models: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // Run analysis
+        async function runAnalysis() {
+            try {
+                document.getElementById('runAnalysisBtn').disabled = true;
+                document.getElementById('runAnalysisBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Running Analysis...';
+                
                 const response = await fetch('/api/run-analysis', {
                     method: 'POST'
                 });
                 
-                // Check if response is OK
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                // Check content type
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    const text = await response.text();
-                    console.error('Response is not JSON:', text);
-                    throw new Error('Response is not JSON');
-                }
-                
                 const result = await response.json();
                 
                 if (result.success) {
+                    // Refresh results
+                    await fetchResults();
                     showNotification('Analysis completed successfully!', 'success');
-                    fetchResults(); // Refresh results
                 } else {
-                    showNotification('Analysis failed to run', 'error');
+                    throw new Error(result.error || 'Failed to run analysis');
                 }
             } catch (error) {
                 console.error('Error running analysis:', error);
-                showNotification('Error running analysis: ' + error.message, 'error');
+                showNotification(`Error: ${error.message}`, 'danger');
             } finally {
-                this.disabled = false;
-                this.innerHTML = originalHTML;
+                document.getElementById('runAnalysisBtn').disabled = false;
+                document.getElementById('runAnalysisBtn').innerHTML = '<i class="fas fa-play me-2"></i>Run Analysis';
             }
-        });
+        }
         
-        // Refresh data
-        document.getElementById('refreshBtn').addEventListener('click', async function() {
-            const btn = this;
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
-            
-            try {
-                await fetchResults();
-                showNotification('Data refreshed successfully!', 'success');
-            } catch (error) {
-                showNotification('Error refreshing data: ' + error.message, 'error');
-            } finally {
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                }, 1000);
-            }
-        });
-
         // Handle file upload
-        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        async function handleFileUpload(event) {
+            event.preventDefault();
             
             const fileInput = document.getElementById('csvFile');
-            const uploadBtn = document.getElementById('uploadBtn');
-            const uploadStatus = document.getElementById('uploadStatus');
-            
-            if (!fileInput.files.length) {
-                showNotification('Please select a file to upload.', 'warning');
-                return;
-            }
-            
             const file = fileInput.files[0];
             
+            if (!file) {
+                showNotification('Please select a file to upload', 'warning');
+                return;
+            }
+            
             if (!file.name.endsWith('.csv')) {
-                showNotification('Please select a CSV file.', 'warning');
+                showNotification('Please upload a CSV file', 'warning');
                 return;
             }
             
-            // Validate file size (max 16MB)
-            if (file.size > 16 * 1024 * 1024) {
-                showNotification('File size exceeds 16MB limit.', 'warning');
-                return;
-            }
-            
-            uploadBtn.disabled = true;
-            const originalHTML = uploadBtn.innerHTML;
-            uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading and Analyzing...';
+            const formData = new FormData();
+            formData.append('file', file);
             
             try {
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                showNotification('Uploading file. This may take a moment...', 'info');
+                document.getElementById('uploadBtn').disabled = true;
+                document.getElementById('uploadBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading...';
                 
                 const response = await fetch('/api/upload-dataset', {
                     method: 'POST',
                     body: formData
                 });
                 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                }
+                const result = await response.json();
                 
-                const contentType = response.headers.get('content-type');
-                
-                if (!contentType || !contentType.includes('application/json')) {
-                    const text = await response.text();
-                    throw new Error('Response is not JSON');
+                if (response.ok && result.success) {
+                    // Reset form
+                    document.getElementById('uploadForm').reset();
+                    
+                    // Refresh results
+                    await fetchResults();
+                    
+                    showNotification(result.message || 'Dataset uploaded and analyzed successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to upload dataset');
                 }
+            } catch (error) {
+                console.error('Error uploading dataset:', error);
+                showNotification(`Upload failed: ${error.message}`, 'danger');
+            } finally {
+                document.getElementById('uploadBtn').disabled = false;
+                document.getElementById('uploadBtn').innerHTML = '<i class="fas fa-cloud-upload-alt me-2"></i> Upload and Analyze';
+            }
+        }
+        
+        // Delete dataset
+        async function deleteDataset(datasetName) {
+            if (!confirm(`Are you sure you want to delete the dataset "${datasetName}"? This action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/delete-dataset/${datasetName}`, {
+                    method: 'DELETE'
+                });
                 
                 const result = await response.json();
                 
-                if (result.success) {
-                    showNotification(`File uploaded and analyzed successfully! ${result.message || ''}`, 'success');
-                    uploadStatus.innerHTML = `
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>Success!</strong> ${result.message || 'File uploaded and analyzed successfully!'}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `;
-                    fetchResults(); // Refresh results to show the new dataset
+                if (response.ok && result.success) {
+                    // Refresh results
+                    await fetchResults();
+                    showNotification(result.message || 'Dataset deleted successfully!', 'success');
                 } else {
-                    showNotification(`Error: ${result.error}`, 'error');
-                    uploadStatus.innerHTML = `
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Error!</strong> ${result.error}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `;
+                    throw new Error(result.error || 'Failed to delete dataset');
                 }
             } catch (error) {
-                console.error('Error uploading file:', error);
-                showNotification(`Error uploading file: ${error.message}`, 'error');
-                uploadStatus.innerHTML = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Error!</strong> ${error.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = originalHTML;
+                console.error('Error deleting dataset:', error);
+                showNotification(`Delete failed: ${error.message}`, 'danger');
             }
-        });
-
-        // Handle model comparison
-        document.getElementById('compareModelsBtn').addEventListener('click', async function() {
-            const compareBtn = document.getElementById('compareModelsBtn');
-            const comparisonResults = document.getElementById('comparisonResults');
-            
-            compareBtn.disabled = true;
-            const originalHTML = compareBtn.innerHTML;
-            compareBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Comparing Models...';
-            
-            try {
-                showNotification('Comparing models across datasets...', 'info');
-                
-                const response = await fetch('/api/compare-models');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    const text = await response.text();
-                    throw new Error('Response is not JSON');
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('Model comparison completed!', 'success');
-                    
-                    // Display comparison results
-                    let html = `
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white py-3">
-                                <h5 class="mb-0">Model Performance Comparison</h5>
-                                <p class="text-muted mb-0">Performance metrics across all datasets</p>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead class="table-light">
-                    `;
-                    
-                    // Create header row with dataset names
-                    html += '<tr><th scope="col">Model</th>';
-                    result.datasets.forEach(dataset => {
-                        html += `<th scope="col">${dataset}</th>`;
-                    });
-                    html += '</tr></thead><tbody>';
-                    
-                    // Create rows for each model
-                    Object.keys(result.comparisons.model_accuracy).forEach(model => {
-                        html += `<tr><td><strong>${model}</strong></td>`;
-                        result.datasets.forEach(dataset => {
-                            const accuracy = result.comparisons.model_accuracy[model][dataset] || 0;
-                            
-                            // Determine metric type and formatting based on model name and dataset
-                            let displayValue = `${accuracy.toFixed(2)}%`;
-                            let valueClass = 'text-muted';
-                            
-                            // Determine color based on value (green for high, red for low)
-                            if (accuracy >= 90) {
-                                valueClass = 'text-success';
-                            } else if (accuracy >= 80) {
-                                valueClass = 'text-primary';
-                            } else if (accuracy >= 70) {
-                                valueClass = 'text-warning';
-                            } else if (accuracy > 0) {
-                                valueClass = 'text-danger';
-                            }
-                            
-                            // Special handling for regression models (R² score) - higher is better
-                            // For classification models (accuracy) - higher is better
-                            html += `<td class="${valueClass}"><strong>${displayValue}</strong></td>`;
-                        });
-                        html += '</tr>';
-                    });
-                    
-                    html += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-3">
-                                    <small class="text-muted">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        <strong>Note:</strong> For classification tasks, values represent accuracy percentages. 
-                                        For regression tasks, values represent R² scores (coefficient of determination) multiplied by 100.
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    comparisonResults.innerHTML = html;
-                } else {
-                    showNotification(`Error: ${result.error}`, 'error');
-                    comparisonResults.innerHTML = `
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Error!</strong> ${result.error}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error comparing models:', error);
-                showNotification(`Error comparing models: ${error.message}`, 'error');
-                comparisonResults.innerHTML = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Error!</strong> Error comparing models: ${error.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-            } finally {
-                compareBtn.disabled = false;
-                compareBtn.innerHTML = originalHTML;
-            }
-        });
+        }
         
-        // Export comparison data
-        document.getElementById('exportComparisonBtn').addEventListener('click', async function() {
-            try {
-                showNotification('Exporting comparison data...', 'info');
-                
-                // In a real application, this would fetch the data and create a downloadable file
-                // For now, we'll simulate the export
-                setTimeout(() => {
-                    showNotification('Comparison data exported successfully!', 'success');
-                }, 1000);
-            } catch (error) {
-                showNotification(`Error exporting data: ${error.message}`, 'error');
-            }
-        });
-        
-        // Toggle view between grid and list
-        document.getElementById('toggleViewBtn').addEventListener('click', function() {
+        // Toggle view (grid/list)
+        function toggleView() {
             gridView = !gridView;
-            this.innerHTML = gridView ? 
-                '<i class="fas fa-th-large me-1"></i> Grid View' : 
-                '<i class="fas fa-list me-1"></i> List View';
-            
-            if (currentData && Object.keys(currentData).length > 0) {
-                displayResults(currentData);
-            }
-        });
+            const button = document.getElementById('toggleViewBtn');
+            button.innerHTML = gridView ? 
+                '<i class="fas fa-list me-1"></i> List View' : 
+                '<i class="fas fa-th-large me-1"></i> Grid View';
+            displayResults(currentData);
+        }
         
         // Show notification
-        function showNotification(message, type = 'info') {
-            // Create notification container if it doesn't exist
-            let container = document.getElementById('notification-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'notification-container';
-                container.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 9999;
-                    width: 300px;
-                `;
-                document.body.appendChild(container);
-            }
-            
+        function showNotification(message, type) {
             // Create notification element
             const notification = document.createElement('div');
-            notification.className = `alert alert-${getTypeClass(type)} alert-dismissible fade show shadow-sm mb-3`;
-            notification.style.cssText = `
-                animation: slideInRight 0.3s ease-out;
-            `;
-            
-            // Add icon based on type
-            const icon = getIconForType(type);
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style = 'top: 20px; right: 20px; z-index: 10000; min-width: 300px;';
             notification.innerHTML = `
-                ${icon}
+                ${type === 'success' ? '<i class="fas fa-check-circle me-2"></i>' : 
+                  type === 'danger' ? '<i class="fas fa-exclamation-triangle me-2"></i>' : 
+                  type === 'warning' ? '<i class="fas fa-exclamation-circle me-2"></i>' : 
+                  '<i class="fas fa-info-circle me-2"></i>'}
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
             
-            container.appendChild(notification);
+            // Add to body
+            document.body.appendChild(notification);
             
             // Auto remove after 5 seconds
             setTimeout(() => {
                 if (notification.parentNode) {
-                    notification.remove();
+                    notification.parentNode.removeChild(notification);
                 }
             }, 5000);
         }
         
-        // Helper function to get Bootstrap class for notification type
-        function getTypeClass(type) {
-            switch (type) {
-                case 'success': return 'success';
-                case 'error': return 'danger';
-                case 'warning': return 'warning';
-                default: return 'info';
-            }
-        }
-        
-        // Helper function to get icon for notification type
-        function getIconForType(type) {
-            switch (type) {
-                case 'success': return '<i class="fas fa-check-circle me-2"></i>';
-                case 'error': return '<i class="fas fa-exclamation-circle me-2"></i>';
-                case 'warning': return '<i class="fas fa-exclamation-triangle me-2"></i>';
-                default: return '<i class="fas fa-info-circle me-2"></i>';
-            }
-        }
-
         // Initialize tooltips
         function initializeTooltips() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         }
@@ -1322,11 +1092,17 @@
             fetchResults();
             // Initialize tooltips after a short delay to ensure DOM is fully loaded
             setTimeout(initializeTooltips, 500);
+            
+            // Event listeners
+            document.getElementById('runAnalysisBtn').addEventListener('click', runAnalysis);
+            document.getElementById('uploadForm').addEventListener('submit', handleFileUpload);
+            document.getElementById('compareModelsBtn').addEventListener('click', compareModels);
+            document.getElementById('toggleViewBtn').addEventListener('click', toggleView);
         });
     </script>
     
     <!-- Footer -->
-    <div class="footer mt-5">
+    <div class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
@@ -1344,15 +1120,15 @@
                 <div class="col-md-3">
                     <h5>Resources</h5>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-file-alt me-2"></i> Documentation</li>
-                        <li><i class="fas fa-life-ring me-2"></i> Support</li>
-                        <li><i class="fas fa-code me-2"></i> API Reference</li>
+                        <li><i class="fas fa-book me-2"></i> Documentation</li>
+                        <li><i class="fas fa-question-circle me-2"></i> Help Center</li>
+                        <li><i class="fas fa-envelope me-2"></i> Support</li>
                     </ul>
                 </div>
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                <p class="mb-0 text-light">&copy; 2025 ML Analysis Dashboard. All rights reserved.</p>
+                <p class="mb-0">&copy; 2023 ML Analysis Dashboard. All rights reserved.</p>
             </div>
         </div>
     </div>

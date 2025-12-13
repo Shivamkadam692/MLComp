@@ -1,8 +1,8 @@
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, mean_squared_error, r2_score
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn.svm import SVC, SVR
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.utils.multiclass import type_of_target
 import numpy as np
@@ -33,9 +33,7 @@ def train_supervised_models(df, target_col):
             # Regression problem
             print("Treating as REGRESSION problem")
             models = {
-                "Decision Tree": DecisionTreeRegressor(random_state=42),
-                "Linear Regression": LinearRegression(),
-                "SVR": SVR()
+                "Decision Tree": DecisionTreeRegressor(random_state=42)
             }
             
             results = {}

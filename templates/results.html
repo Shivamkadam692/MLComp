@@ -3,182 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ data.name }} - ML Analysis</title>
+    <title>{{ data.name }} - ML Analysis Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            --secondary-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            --accent-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --success-color: #4ade80;
+            --warning-color: #facc15;
+            --danger-color: #f87171;
         }
         
         body {
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
         }
         
-        .header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 40px 0;
-            margin-bottom: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
         }
         
-        .header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
         }
         
         .metric-card {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            padding: 25px;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
         }
         
         .metric-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .metric-value {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary-color);
             margin: 15px 0;
         }
         
-        .explanation {
-            background-color: #e9f7fe;
-            border-left: 4px solid #2575fc;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .explanation h6 {
-            margin-top: 0;
-            color: #2575fc;
-            font-weight: 600;
-        }
-        
-        .term-highlight {
-            font-weight: bold;
-            color: #2575fc;
-        }
-        
-        .section-title {
-            position: relative;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--primary-gradient);
-            border-radius: 2px;
-        }
-        
-        .btn-custom {
-            background: var(--primary-gradient);
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
-        }
-        
-        .btn-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(37, 117, 252, 0.4);
-        }
-        
-        .progress-bar-custom {
-            height: 10px;
-            border-radius: 5px;
-        }
-        
-        .feature-card {
-            text-align: center;
-            padding: 25px 15px;
-            border-radius: 12px;
-            height: 100%;
-            background: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            color: white;
         }
         
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             text-align: center;
-            transition: all 0.3s ease;
+            padding: 25px 15px;
+            transition: transform 0.3s ease;
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
         }
         
-        .stat-number {
-            font-size: 2.5rem;
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 25px;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .term-highlight {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .explanation {
+            background: rgba(67, 97, 238, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 25px 0;
+        }
+        
+        .explanation h6 {
+            color: var(--primary-color);
             font-weight: 700;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         
-        .pulse-animation {
-            animation: pulse 2s infinite;
+        .progress-bar-custom {
+            border-radius: 10px;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+        
+        .btn-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            color: white;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
         }
         
         .fade-in {
@@ -190,49 +174,62 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .stat-number {
+                font-size: 2rem;
             }
-            to {
-                transform: translateX(0);
-                opacity: 1;
+            
+            .metric-value {
+                font-size: 1.5rem;
             }
-        }
-        
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-            border-radius: 15px 15px 0 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header text-center">
-            <h1 class="display-4 fw-bold"><i class="fas fa-chart-line me-3"></i>{{ data.name }}</h1>
-            <p class="lead fs-5">Detailed Analysis Results</p>
-            <div class="mt-4">
-                <a href="/" class="btn btn-light btn-custom me-2">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                </a>
-                <button id="exportResultsBtn" class="btn btn-outline-light ms-2">
-                    <i class="fas fa-download me-2"></i>Export Results
-                </button>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain me-2"></i>ML Analysis Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#upload-section"><i class="fas fa-upload me-1"></i> Upload</a>
+                    </li>
+                </ul>
             </div>
         </div>
-        
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="section-title mb-0">{{ data.name }}</h2>
+                    <a href="/" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                </div>
+                <p class="text-muted">Detailed analysis results and performance metrics</p>
+            </div>
+        </div>
+
         <!-- Stats Overview -->
         <div class="row mb-5">
             <div class="col-md-4 mb-4">
                 <div class="stat-card">
                     <i class="fas fa-table fa-2x mb-3 text-primary"></i>
                     <div class="stat-number">{{ data.dataset_shape[0] }}</div>
-                    <div class="text-muted">Rows</div>
+                    <div class="text-muted">Samples</div>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
@@ -286,16 +283,13 @@
                                         {% if data.target_column %}
                                         <p class="mb-1"><i class="fas fa-bullseye text-success me-2"></i> <strong>Target Column:</strong> {{ data.target_column }}</p>
                                         {% endif %}
-                                        <p class="mb-0"><i class="fas fa-calendar-alt text-info me-2"></i> <strong>Analyzed:</strong> Just now</p>
+                                        <p class="mb-0"><i class="fas fa-list text-info me-2"></i> <strong>Total Columns:</strong> {{ data.columns|length }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Dataset Sample -->
-                        {% if data.dataset_sample %}
-                        <h4 class="section-title">Dataset Sample</h4>
-                        <p class="text-muted mb-3">First 5 rows of the dataset</p>
+
+                        <h4 class="section-title">Sample Data</h4>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead class="table-light">
@@ -316,107 +310,21 @@
                                 </tbody>
                             </table>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Results Section -->
-        <div class="row mt-4">
+        <div class="row mt-5">
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h3 class="section-title mb-0">Analysis Results</h3>
-                        <span class="badge bg-primary rounded-pill">Detailed Metrics</span>
+                        <h3 class="section-title mb-0">Model Performance Results</h3>
+                        <span class="badge bg-primary rounded-pill">{{ data.results|length }} Models</span>
                     </div>
                     <div class="card-body">
-                        {% if analysis_type == 'kmeans' %}
-                            <!-- K-Means Clustering Results -->
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-4">
-                                    <div class="metric-card text-center">
-                                        <h6>Silhouette Score 
-                                            <i class="fas fa-info-circle text-primary" 
-                                               data-bs-toggle="tooltip" 
-                                               title="Measures clustering quality from -1 to 1. Higher values indicate better clustering."></i>
-                                        </h6>
-                                        <div class="metric-value">{{ "%.3f"|format(data.results.silhouette_score) }}</div>
-                                        <p class="text-muted">Clustering Quality</p>
-                                        <div class="progress" style="height: 10px;">
-                                            <div class="progress-bar progress-bar-custom" 
-                                                 role="progressbar" 
-                                                 style="width: 75%" 
-                                                 aria-valuenow="75" 
-                                                 aria-valuemin="0" 
-                                                 aria-valuemax="100"></div>
-                                        </div>
-                                        <div class="mt-2 text-muted">
-                                            {{ "Quality: " }}
-                                            {% if data.results.silhouette_score > 0.7 %}Excellent
-                                            {% elif data.results.silhouette_score > 0.5 %}Good
-                                            {% elif data.results.silhouette_score > 0.25 %}Fair
-                                            {% else %}Poor{% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="metric-card">
-                                        <h6 class="text-center mb-3">Cluster Distribution</h6>
-                                        {% set labels = data.results.labels %}
-                                        {% set unique_labels = {} %}
-                                        {% for label in labels %}
-                                            {% if label in unique_labels %}
-                                                {% set _ = unique_labels.update({label: unique_labels[label] + 1}) %}
-                                            {% else %}
-                                                {% set _ = unique_labels.update({label: 1}) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% for label, count in unique_labels.items() %}
-                                            {% set percentage = (count / labels|length * 100) %}
-                                            <div class="mb-3">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <span>Cluster {{ label }}</span>
-                                                    <span>{{ count }} samples ({{ "%.1f"|format(percentage) }}%)</span>
-                                                </div>
-                                                <div class="progress" style="height: 8px;">
-                                                    <div class="progress-bar progress-bar-custom bg-success" 
-                                                         role="progressbar" 
-                                                         style="width: 50%" 
-                                                         aria-valuenow="50" 
-                                                         aria-valuemin="0" 
-                                                         aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Explanation for Silhouette Score -->
-                            <div class="explanation">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="mb-0">What is Silhouette Score?</h6>
-                                    <i class="fas fa-info-circle text-primary" 
-                                       data-bs-toggle="tooltip" 
-                                       title="Measures clustering quality from -1 to 1. Higher values indicate better clustering."></i>
-                                </div>
-                                <p>The Silhouette Score measures how similar an object is to its own cluster compared to other clusters. 
-                                Values range from -1 to 1:</p>
-                                <ul>
-                                    <li><span class="term-highlight">+1</span>: Objects are well matched to their own cluster and poorly matched to neighboring clusters</li>
-                                    <li><span class="term-highlight">0</span>: Objects are on or very close to the decision boundary between two neighboring clusters</li>
-                                    <li><span class="term-highlight">-1</span>: Objects might have been assigned to the wrong cluster</li>
-                                </ul>
-                                <p>In this case, a score of <span class="term-highlight">{{ "%.3f"|format(data.results.silhouette_score) }}</span> indicates 
-                                {% if data.results.silhouette_score > 0.7 %}<span class="text-success">excellent</span>
-                                {% elif data.results.silhouette_score > 0.5 %}<span class="text-primary">good</span>
-                                {% elif data.results.silhouette_score > 0.25 %}<span class="text-warning">fair</span>
-                                {% else %}<span class="text-danger">poor</span>{% endif %} clustering quality.</p>
-                            </div>
-                        
-                        {% elif analysis_type == 'imdb' %}
+                        {% if analysis_type == 'imdb' %}
                             <!-- Sentiment Analysis Results -->
                             <div class="row mb-4">
                                 <div class="col-md-4 mb-4">
@@ -424,10 +332,10 @@
                                         <h6>Accuracy 
                                             <i class="fas fa-info-circle text-primary" 
                                                data-bs-toggle="tooltip" 
-                                               title="Percentage of correct predictions. Higher is better."></i>
+                                               title="Percentage of correct predictions out of all predictions. Higher is better."></i>
                                         </h6>
-                                        <div class="metric-value">{{ "%.2f"|format(data.results.accuracy * 100) }}%</div>
-                                        <p class="text-muted">Prediction Accuracy</p>
+                                        <div class="metric-value">{{ "%.1f"|format(data.results.accuracy * 100) }}%</div>
+                                        <p class="text-muted">Overall Performance</p>
                                         <div class="progress" style="height: 10px;">
                                             <div class="progress-bar progress-bar-custom bg-success" 
                                                  role="progressbar" 
@@ -494,6 +402,14 @@
                                 
                                 <p><span class="term-highlight">Precision</span>: Of all positive predictions, how many were actually positive? 
                                 Higher precision means lower false positive rate.</p>
+                                
+                                <h6 class="mt-4 mb-3">Simple Explanations for Normal Users</h6>
+                                <ul>
+                                    <li><span class="term-highlight">Accuracy</span>: Think of it as a grade out of 100. If accuracy is 85%, it means the model got 85 out of 100 predictions right.</li>
+                                    <li><span class="term-highlight">Precision</span>: When the model says something is positive (like "this review is good"), precision tells you how often it's right. If precision is 90%, then 9 out of 10 times the model says something is good, it really is good.</li>
+                                    <li><span class="term-highlight">Recall</span>: Out of all the truly good reviews, recall tells you what percentage the model correctly identified. If recall is 80%, it means the model found 80% of all the actually good reviews.</li>
+                                    <li><span class="term-highlight">F1-Score</span>: A single number that balances precision and recall. It's like getting one score that considers both how careful the model is (precision) and how thorough it is (recall).</li>
+                                </ul>
                             </div>
                             
                             <h4 class="section-title">Classification Report</h4>
@@ -558,6 +474,14 @@
                                 treating all classes equally regardless of their frequency.</p>
                                 <p>The <span class="term-highlight">weighted avg</span> calculates metrics for each class and takes the average weighted by support 
                                 (the number of true instances for each class), accounting for class imbalance.</p>
+                                
+                                <h6 class="mt-4 mb-3">Simple Explanations for Normal Users</h6>
+                                <ul>
+                                    <li><span class="term-highlight">Class 0 (Negative)</span>: Represents negative reviews (bad movies, products, etc.)</li>
+                                    <li><span class="term-highlight">Class 1 (Positive)</span>: Represents positive reviews (good movies, products, etc.)</li>
+                                    <li>If Class 1 has high precision (e.g., 0.90), it means when the model predicts something is positive, it's usually right 90% of the time.</li>
+                                    <li>If Class 1 has high recall (e.g., 0.85), it means the model catches 85% of all actually positive reviews.</li>
+                                </ul>
                             </div>
                         
                         {% else %}
@@ -570,56 +494,97 @@
                                         
                                         {% if metrics.mse is defined %}
                                             <!-- Regression Metrics -->
-                                            <div class="text-center mb-3">
-                                                <div class="metric-value">{{ "%.4f"|format(metrics.r2) }}</div>
-                                                <p class="text-muted mb-2">R² Score</p>
-                                                <div class="progress" style="height: 10px;">
-                                                    <div class="progress-bar progress-bar-custom bg-success" 
-                                                         role="progressbar" 
-                                                         style="width: 75%" 
-                                                         aria-valuenow="75" 
-                                                         aria-valuemin="0" 
-                                                         aria-valuemax="100"></div>
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>MSE</strong>
+                                                    <span>{{ "%.4f"|format(metrics.mse) }}</span>
                                                 </div>
-                                                <div class="text-muted mt-2">
-                                                    Performance: 
-                                                    {% if metrics.r2 >= 0.9 %}Excellent
-                                                    {% elif metrics.r2 >= 0.7 %}Good
-                                                    {% elif metrics.r2 >= 0.5 %}Fair
-                                                    {% else %}Poor{% endif %}
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-danger" role="progressbar" 
+                                                         style="width: 30%" 
+                                                         aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>RMSE</strong>
+                                                    <span>{{ "%.4f"|format(metrics.rmse) }}</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-warning" role="progressbar" 
+                                                         style="width: 40%" 
+                                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>R² Score</strong>
+                                                    <span>{{ "%.4f"|format(metrics.r2) }}</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
+                                                         style="width: 70%" 
+                                                         aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                             </div>
                                             
                                             <table class="table table-sm">
                                                 <tr>
-                                                    <td>RMSE 
-                                                        <i class="fas fa-info-circle text-primary" 
-                                                           data-bs-toggle="tooltip" 
-                                                           title="Root Mean Square Error - lower is better"></i>
+                                                    <td colspan="2" class="text-center">
+                                                        <small class="text-muted">Lower MSE/RMSE and higher R² indicate better performance</small>
                                                     </td>
-                                                    <td>{{ "%.4f"|format(metrics.rmse) }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>MSE 
-                                                        <i class="fas fa-info-circle text-primary" 
-                                                           data-bs-toggle="tooltip" 
-                                                           title="Mean Square Error - lower is better"></i>
-                                                    </td>
-                                                    <td>{{ "%.4f"|format(metrics.mse) }}</td>
                                                 </tr>
                                             </table>
                                         {% else %}
                                             <!-- Classification Metrics -->
-                                            <div class="text-center mb-3">
-                                                <div class="metric-value">{{ "%.2f"|format(metrics.accuracy * 100) }}%</div>
-                                                <p class="text-muted mb-2">Accuracy</p>
-                                                <div class="progress" style="height: 10px;">
-                                                    <div class="progress-bar progress-bar-custom bg-success" 
-                                                         role="progressbar" 
+                                            {% set weightedMetrics = metrics['weighted avg'] %}
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>Accuracy</strong>
+                                                    <span>{{ "%.1f"|format(metrics.accuracy * 100) }}%</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-success" role="progressbar" 
                                                          style="width: 85%" 
-                                                         aria-valuenow="85" 
-                                                         aria-valuemin="0" 
-                                                         aria-valuemax="100"></div>
+                                                         aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>Precision</strong>
+                                                    <span>{{ "%.3f"|format(weightedMetrics.precision) }}</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-info" role="progressbar" 
+                                                         style="width: 75%" 
+                                                         aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>Recall</strong>
+                                                    <span>{{ "%.3f"|format(weightedMetrics.recall) }}</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-primary" role="progressbar" 
+                                                         style="width: 80%" 
+                                                         aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <strong>F1-Score</strong>
+                                                    <span>{{ "%.3f"|format(weightedMetrics['f1-score']) }}</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-custom bg-warning" role="progressbar" 
+                                                         style="width: 78%" 
+                                                         aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                             </div>
                                             
@@ -673,6 +638,14 @@
                                 </ul>
                                 <p>To compare models, look for higher values in all metrics. Models with consistently high scores across all metrics 
                                 are generally preferred.</p>
+                                
+                                <h6 class="mt-4 mb-3">Simple Explanations for Normal Users</h6>
+                                <ul>
+                                    <li><span class="term-highlight">Accuracy</span>: Like a test score - if accuracy is 90%, the model gets 90 out of 100 predictions right.</li>
+                                    <li><span class="term-highlight">Precision</span>: When the model predicts something belongs to a category, precision tells you how often it's correct. High precision means fewer false alarms.</li>
+                                    <li><span class="term-highlight">Recall</span>: Out of all items that truly belong to a category, recall tells you what percentage the model found. High recall means the model misses fewer items.</li>
+                                    <li><span class="term-highlight">F1-Score</span>: A balanced score that considers both precision and recall. It's especially useful when you care about both finding most items AND being accurate about what you find.</li>
+                                </ul>
                             </div>
                         {% endif %}
                     </div>
@@ -692,60 +665,12 @@
                 <div class="modal-body" id="modalExplanationContent">
                     <!-- Content will be dynamically inserted here -->
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
             </div>
         </div>
     </div>
-    
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Initialize tooltips
-        document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-        });
-    </script>
-    
-    <script>
-        // Initialize tooltips
-        document.addEventListener('DOMContentLoaded', function() {
-            // Export results functionality
-            document.getElementById('exportResultsBtn').addEventListener('click', function() {
-                alert('In a real application, this would export the results to a file.');
-                // Simulate export
-                const notification = document.createElement('div');
-                notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
-                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
-                notification.innerHTML = `
-                    <i class="fas fa-check-circle me-2"></i>
-                    Results exported successfully!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                document.body.appendChild(notification);
-                
-                // Auto remove after 3 seconds
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 3000);
-            });
-            
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-        });
-    </script>
-    
+
     <!-- Footer -->
-    <div class="footer mt-5">
+    <div class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
@@ -763,17 +688,28 @@
                 <div class="col-md-3">
                     <h5>Resources</h5>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-file-alt me-2"></i> Documentation</li>
-                        <li><i class="fas fa-life-ring me-2"></i> Support</li>
-                        <li><i class="fas fa-code me-2"></i> API Reference</li>
+                        <li><i class="fas fa-book me-2"></i> Documentation</li>
+                        <li><i class="fas fa-question-circle me-2"></i> Help Center</li>
+                        <li><i class="fas fa-envelope me-2"></i> Support</li>
                     </ul>
                 </div>
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                <p class="mb-0 text-light">&copy; 2023 ML Analysis Dashboard. All rights reserved.</p>
+                <p class="mb-0">&copy; 2023 ML Analysis Dashboard. All rights reserved.</p>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 </body>
 </html>

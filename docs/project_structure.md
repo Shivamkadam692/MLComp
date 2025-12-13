@@ -61,7 +61,7 @@ MLComp/
 #### Models (`models/`)
 Contains implementations of specific machine learning algorithms:
 - `classification.py`: Decision Tree, Logistic Regression, and SVM classifiers
-- `regression.py`: Decision Tree Regressor, Linear Regression, and SVR
+- `regression.py`: Decision Tree Regressor
 - `clustering.py`: K-Means clustering implementation
 - `sentiment.py`: Sentiment analysis model
 
