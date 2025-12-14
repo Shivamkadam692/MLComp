@@ -77,8 +77,8 @@ Legacy source code organization (will be deprecated in future versions):
 - `unsupervised.py`: Unsupervised learning model training
 
 ### Templates
-- `index.html`: Main dashboard page
-- `results.html`: Detailed results view
+- `index.html`: Main dashboard page with dataset management features
+- `results.html`: Detailed results view with enhanced metric explanations
 
 ### Documentation
 - `README.md`: Main project documentation

@@ -1,4 +1,4 @@
-# ML Analysis Dashboard v1.6.0
+# ML Analysis Dashboard v1.7.0
 
 A comprehensive machine learning analysis dashboard built with Python Flask that provides automated model training, evaluation, and comparison across multiple datasets.
 
@@ -11,6 +11,8 @@ A comprehensive machine learning analysis dashboard built with Python Flask that
 - **Model Comparison**: Cross-dataset performance visualization for informed model selection
 - **Interactive Dashboard**: Real-time results display with Bootstrap UI
 - **File Upload Support**: Analyze your own CSV datasets with automatic preprocessing
+- **Dataset Management**: Upload and delete datasets as needed
+- **Clear Explanations**: Simple explanations of ML metrics for better understanding
 - **API Endpoints**: RESTful API for programmatic access to analysis results
 
 ## Quick Start
@@ -118,10 +120,17 @@ MLComp/
 - `POST /api/run-analysis` - Trigger a new analysis run
 - `GET /api/compare-models` - Get model comparison data
 - `POST /api/upload-dataset` - Upload and analyze a new CSV dataset
+- `DELETE /api/delete-dataset/<dataset_name>` - Delete an uploaded dataset
 
 ## Version History
 
-### v1.6.0 (Current)
+### v1.7.0 (Current)
+- Added dataset management feature to delete uploaded datasets
+- Enhanced ML metrics explanations for better user understanding
+- Improved UI with delete functionality for uploaded datasets
+- Added clear, simple explanations of Accuracy, Precision, Recall, and F1-Score
+
+### v1.6.0
 - Refactored code into modular structure with separate model files
 - Added sentiment analysis module for unstructured text data
 - Improved documentation and code organization
