@@ -94,7 +94,7 @@ MLComp/
 #### K-Means Clustering (Unsupervised)
 - **Purpose**: Groups data points into clusters based on similarity
 - **Strengths**: Simple to implement, scales to large datasets, adapts to new examples
-- **Best For**: Exploratory data analysis and customer segmentation tasks
+- **Best For**: Exploratory data analysis and customer segmentation task
 
 ### Datasets Used
 
