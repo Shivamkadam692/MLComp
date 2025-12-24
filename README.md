@@ -49,7 +49,7 @@ MLComp/
 ├── data/                 # Additional datasets
 │   ├── iris.csv
 │   └── titanic.csv
-├── docs/                 # Documentation files
+├── docs/                
 │   └── project_structure.md
 ├── models/               # Machine learning model implementations
 │   ├── classification.py
