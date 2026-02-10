@@ -13,7 +13,7 @@ A comprehensive machine learning analysis dashboard built with Python Flask that
 - **File Upload Support**: Analyze your own CSV datasets with automatic preprocessing
 - **Dataset Management**: Upload and delete datasets as needed
 - **Clear Explanations**: Simple explanations of ML metrics for better understanding
-- **API Endpoints**: RESTful API for programmatic access to analysis results
+- **API Endpoints**: RESTful API for programmatic access to analysis results and discussion 
 
 ## Quick Start
 
