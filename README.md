@@ -27,7 +27,7 @@ A comprehensive machine learning analysis dashboard built with Python Flask that
    python app.py
    ```
 
-3. Access the dashboard at `http://localhost:5000`
+3. Access the dashboard at
 
 ## Project Structure
 
