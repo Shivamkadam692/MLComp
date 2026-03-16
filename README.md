@@ -88,7 +88,7 @@ MLComp/
 
 #### For Regression Tasks
 - **Decision Tree Regressor**: Creates a tree-like model to predict continuous values
-  - **Strengths**: Easy to interpret, handles non-linear relationships, requires little data preprocessing
+  - **Strengths**: Easy to interpret, handles non-linear relationships, requires data preprocessing
   - **Best For**: Problems where interpretability is important and relationships may be non-linear
 
 #### K-Means Clustering (Unsupervised)
