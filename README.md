@@ -1,6 +1,6 @@
 # ML Analysis Dashboard v1.7.0
 
-A comprehensive machine learning analysis dashboard built with Python Flask that provides automated model training, evaluation, and comparison across multiple datasets.
+A comprehensive machine learning analysis dashboard built with Python Flask that provides automated model training, evaluation,
 
 ## Features
 
