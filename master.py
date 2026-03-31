@@ -21,7 +21,7 @@ print(data.describe())
 missing_values = data.isnull().sum()
 print(missing_values)
 
-# Impute missing values in a specific column (e.g., 'distance') with the mean
+# Impute missing values in a specific column (e.g., 'distance')
 mean_value = data['distance'].mean()
 data['distance'].fillna(mean_value, inplace=True)
 data.dropna(inplace=True)
